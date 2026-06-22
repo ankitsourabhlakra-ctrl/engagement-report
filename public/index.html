@@ -1,0 +1,2313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trellis — Customer Engagement</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root {
+  --trellis:     #1B4F72;
+  --trellis-dk:  #0D2B3E;
+  --trellis-lt:  #EBF5FB;
+  --trellis-mid: #2E86C1;
+  --gold:        #D4943A;
+  --gold-lt:     #FEF5E7;
+  --bg:          #F4F6F8;
+  --white:       #FFFFFF;
+  --text:        #1A2B3C;
+  --text-2:      #4A5568;
+  --text-3:      #8A9BB0;
+  --border:      #DDE3EB;
+  --border-2:    #C5D0DC;
+  --green:       #1A7A4A;
+  --green-bg:    #EAF7EF;
+  --green-bd:    #A3D9B8;
+  --amber:       #B7600A;
+  --amber-bg:    #FEF5E7;
+  --amber-bd:    #F5CBA7;
+  --red:         #B03A2E;
+  --red-bg:      #FDEDEC;
+  --red-bd:      #F1948A;
+  --blue:        #1A5276;
+  --blue-bg:     #EAF2F8;
+  --sans:        'IBM Plex Sans', sans-serif;
+  --mono:        'IBM Plex Mono', monospace;
+  --serif:       Georgia, 'Times New Roman', serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100%; }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); font-size: 14px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+
+/* ── HEADER ── */
+.app-header { background: var(--trellis); color: white; padding: 0; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
+.header-inner { max-width: 1100px; margin: 0 auto; padding: 0 24px; height: 58px; display: flex; align-items: center; gap: 14px; }
+.header-logo { width: 36px; height: 36px; background: var(--gold); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-family: var(--mono); font-weight: 700; font-size: 13px; color: white; flex-shrink: 0; }
+.header-brand { font-size: 17px; font-weight: 600; letter-spacing: -0.2px; }
+.header-tagline { font-size: 11px; color: rgba(255,255,255,0.6); font-family: var(--mono); }
+.header-breadcrumb { margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: 12px; color: rgba(255,255,255,0.7); }
+.breadcrumb-sep { opacity: 0.4; }
+.breadcrumb-link { cursor: pointer; text-decoration: underline; text-underline-offset: 3px; }
+.breadcrumb-link:hover { color: white; }
+.header-csm { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); border-radius: 20px; padding: 4px 12px; font-size: 11px; color: rgba(255,255,255,0.85); display: none; }
+.header-csm.visible { display: block; }
+
+/* ── SHELL ── */
+.shell { max-width: 1100px; margin: 0 auto; padding: 28px 24px 80px; }
+
+/* ── SCREEN MANAGEMENT ── */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ══════════════════════════════════
+   SCREEN 1 — ACCOUNT SELECTION
+   ══════════════════════════════════ */
+.screen1-header { margin-bottom: 24px; }
+.screen1-title { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.screen1-sub { font-size: 13px; color: var(--text-2); }
+
+.account-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 16px; }
+
+.account-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 20px; cursor: pointer; transition: all 0.18s; position: relative; overflow: hidden; }
+.account-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+.account-card.health-green::before  { background: var(--green); }
+.account-card.health-amber::before  { background: var(--amber); }
+.account-card.health-red::before    { background: var(--red); }
+.account-card.health-blue::before   { background: var(--blue); }
+.account-card:hover { border-color: var(--trellis-mid); box-shadow: 0 6px 20px rgba(27,79,114,0.12); transform: translateY(-2px); }
+
+.ac-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; gap: 8px; }
+.ac-name { font-size: 15px; font-weight: 700; color: var(--text); line-height: 1.3; }
+.ac-type { font-size: 10px; color: var(--text-3); font-family: var(--mono); text-transform: uppercase; margin-top: 2px; }
+
+.health-badge { font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 10px; white-space: nowrap; flex-shrink: 0; }
+.health-badge.green  { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-bd); }
+.health-badge.amber  { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-bd); }
+.health-badge.red    { background: var(--red-bg);   color: var(--red);   border: 1px solid var(--red-bd); }
+.health-badge.blue   { background: var(--blue-bg);  color: var(--blue);  border: 1px solid var(--border-2); }
+
+.ac-metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.ac-metric { display: flex; flex-direction: column; gap: 2px; }
+.ac-metric-val { font-size: 16px; font-weight: 700; color: var(--text); }
+.ac-metric-label { font-size: 10px; color: var(--text-3); font-family: var(--mono); }
+
+.nps-display { display: inline-flex; align-items: center; gap: 5px; }
+.nps-val { font-size: 16px; font-weight: 700; }
+.nps-val.nps-high   { color: var(--green); }
+.nps-val.nps-mid    { color: var(--amber); }
+.nps-val.nps-low    { color: var(--red); }
+.nps-delta { font-size: 10px; font-family: var(--mono); }
+.nps-delta.up   { color: var(--green); }
+.nps-delta.down { color: var(--red); }
+
+.ac-footer { display: flex; align-items: center; justify-content: space-between; padding-top: 10px; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-3); }
+.ac-quarter { background: var(--trellis-lt); color: var(--trellis); font-weight: 600; padding: 3px 8px; border-radius: 4px; font-family: var(--mono); font-size: 10px; }
+.ac-ticket-warn { color: var(--red); font-weight: 600; }
+
+/* ══════════════════════════════════
+   SCREEN 2 — ACCOUNT DETAIL
+   ══════════════════════════════════ */
+.back-btn { display: inline-flex; align-items: center; gap: 6px; color: var(--trellis-mid); font-size: 13px; cursor: pointer; margin-bottom: 20px; font-weight: 500; }
+.back-btn:hover { color: var(--trellis); }
+
+.account-hero { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 24px; margin-bottom: 20px; display: flex; align-items: flex-start; gap: 20px; }
+.hero-icon { width: 52px; height: 52px; border-radius: 10px; background: var(--trellis); color: white; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 700; font-family: var(--mono); flex-shrink: 0; }
+.hero-main { flex: 1; min-width: 0; }
+.hero-name { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+.hero-meta { font-size: 12px; color: var(--text-3); display: flex; gap: 12px; flex-wrap: wrap; }
+.hero-metrics { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; }
+.hero-metric { display: flex; flex-direction: column; gap: 3px; }
+.hero-metric-val { font-size: 20px; font-weight: 700; color: var(--text); }
+.hero-metric-label { font-size: 10px; color: var(--text-3); font-family: var(--mono); text-transform: uppercase; }
+
+.section-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin-bottom: 16px; }
+.section-card-title { font-size: 13px; font-weight: 700; color: var(--trellis); text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--mono); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+
+/* MILESTONE DASHBOARD */
+.milestone-track-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-3); font-family: var(--mono); margin-bottom: 8px; }
+.milestone-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 16px; }
+.milestone-cell { border: 1px solid var(--border); border-radius: 8px; padding: 12px; position: relative; }
+.milestone-cell.current { border-color: var(--trellis); background: var(--trellis-lt); }
+.milestone-qtr { font-size: 10px; font-family: var(--mono); font-weight: 700; color: var(--text-3); text-transform: uppercase; margin-bottom: 4px; }
+.milestone-cell.current .milestone-qtr { color: var(--trellis); }
+.milestone-name { font-size: 12px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+.milestone-status-pill { font-size: 10px; padding: 2px 8px; border-radius: 10px; font-weight: 600; display: inline-block; }
+.ms-draft         { background: var(--amber-bg); color: var(--amber); }
+.ms-not-started   { background: var(--bg); color: var(--text-3); border: 1px solid var(--border); }
+.ms-finalized     { background: var(--green-bg); color: var(--green); }
+.ms-planned       { background: var(--blue-bg); color: var(--blue); }
+.ms-rescheduled   { background: var(--amber-bg); color: var(--amber); }
+.ms-completed     { background: var(--green-bg); color: var(--green); }
+.ms-feedback      { background: #F3E8FF; color: #7E22CE; }
+.milestone-status-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.current-badge { position: absolute; top: 8px; right: 8px; font-size: 9px; background: var(--trellis); color: white; padding: 2px 6px; border-radius: 10px; font-family: var(--mono); }
+
+/* USAGE SNAPSHOT */
+.usage-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px; }
+.usage-stat { background: var(--bg); border-radius: 6px; padding: 12px; }
+.usage-stat-val { font-size: 22px; font-weight: 700; color: var(--text); }
+.usage-stat-label { font-size: 11px; color: var(--text-3); }
+.usage-stat-delta { font-size: 11px; font-family: var(--mono); margin-top: 2px; }
+.delta-up   { color: var(--green); }
+.delta-down { color: var(--red); }
+.usage-narrative { font-size: 12px; color: var(--text-2); line-height: 1.6; border-left: 3px solid var(--trellis-lt); padding-left: 12px; }
+
+/* VERBATIMS */
+.verbatim-list { display: flex; flex-direction: column; gap: 10px; }
+.verbatim-item { background: var(--bg); border-radius: 6px; padding: 12px; }
+.verbatim-quote { font-size: 12px; color: var(--text-2); line-height: 1.6; font-style: italic; margin-bottom: 6px; }
+.verbatim-attr { display: flex; align-items: center; justify-content: space-between; }
+.verbatim-name { font-size: 10px; font-weight: 600; color: var(--text); }
+.verbatim-score { font-size: 11px; font-family: var(--mono); }
+.vs-high { color: var(--green); }
+.vs-mid  { color: var(--amber); }
+.vs-low  { color: var(--red); }
+
+/* GENERATE BUTTON AREA */
+.generate-area { background: var(--trellis-lt); border: 1px solid var(--trellis-mid); border-radius: 10px; padding: 20px 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 20px; }
+.generate-label { font-size: 14px; font-weight: 600; color: var(--trellis); }
+.generate-sub { font-size: 12px; color: var(--trellis-mid); margin-top: 2px; }
+.btn-generate { background: var(--trellis); color: white; border: none; border-radius: 8px; padding: 12px 24px; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; font-family: var(--sans); transition: background 0.15s; }
+.btn-generate:hover { background: var(--trellis-dk); }
+.btn-generate:disabled { background: var(--border-2); color: var(--text-3); cursor: not-allowed; }
+
+/* ══════════════════════════════════
+   SCREEN 3 — GENERATING
+   ══════════════════════════════════ */
+.gen-card { background: var(--white); border: 1px solid var(--border); border-radius: 10px; padding: 48px 32px; text-align: center; }
+.gen-spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--trellis); border-radius: 50%; margin: 0 auto 20px; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.gen-title { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+.gen-step { font-size: 12px; color: var(--text-3); font-family: var(--mono); }
+.gen-progress { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; max-width: 360px; margin-left: auto; margin-right: auto; }
+.gen-step-row { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--text-3); }
+.gen-step-row.done { color: var(--green); }
+.gen-step-row.active { color: var(--trellis); font-weight: 600; }
+.gen-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); flex-shrink: 0; }
+.gen-step-row.done   .gen-dot { background: var(--green); }
+.gen-step-row.active .gen-dot { background: var(--trellis); animation: pulse 1s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* ══════════════════════════════════
+   SCREEN 4 — REPORT VIEW
+   ══════════════════════════════════ */
+.report-toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; gap: 12px; flex-wrap: wrap; }
+.report-toolbar-left { font-size: 13px; color: var(--text-2); }
+.report-toolbar-right { display: flex; gap: 10px; }
+.btn-secondary { background: white; color: var(--trellis); border: 1.5px solid var(--trellis); border-radius: 8px; padding: 9px 18px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: var(--sans); transition: all 0.15s; }
+.btn-secondary:hover { background: var(--trellis-lt); }
+.btn-primary { background: var(--trellis); color: white; border: none; border-radius: 8px; padding: 9px 18px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: var(--sans); transition: background 0.15s; }
+.btn-primary:hover { background: var(--trellis-dk); }
+
+.report-wrap { background: var(--white); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+
+.report-cover { background: linear-gradient(135deg, var(--trellis-dk) 0%, var(--trellis) 60%, var(--trellis-mid) 100%); color: white; padding: 48px 48px 40px; }
+.report-cover-eyebrow { font-size: 11px; font-family: var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: rgba(255,255,255,0.6); margin-bottom: 8px; }
+.report-cover-client { font-size: 32px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.5px; }
+.report-cover-title { font-size: 16px; color: rgba(255,255,255,0.8); margin-bottom: 28px; }
+.report-cover-meta { display: flex; gap: 28px; flex-wrap: wrap; }
+.cover-meta-item { display: flex; flex-direction: column; gap: 3px; }
+.cover-meta-label { font-size: 10px; font-family: var(--mono); color: rgba(255,255,255,0.5); text-transform: uppercase; }
+.cover-meta-val { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.9); }
+
+.report-body { padding: 0 48px; }
+
+.report-section { padding: 36px 0; border-bottom: 1px solid var(--border); }
+.report-section:last-child { border-bottom: none; }
+
+.section-eyebrow { font-size: 10px; font-family: var(--mono); font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--trellis-mid); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+.section-eyebrow::after { content: ''; flex: 1; height: 1px; background: var(--trellis-lt); }
+.section-heading { font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 14px; letter-spacing: -0.3px; }
+.section-body { font-size: 14px; color: var(--text-2); line-height: 1.8; }
+.section-body p { margin-bottom: 14px; }
+.section-body p:last-child { margin-bottom: 0; }
+.section-body strong { color: var(--text); font-weight: 600; }
+
+.pullquote { border-left: 4px solid var(--gold); padding: 12px 20px; margin: 18px 0; background: var(--gold-lt); border-radius: 0 6px 6px 0; }
+.pullquote-text { font-family: var(--serif); font-size: 15px; color: var(--text); line-height: 1.7; font-style: italic; margin-bottom: 6px; }
+.pullquote-attr { font-size: 11px; color: var(--text-3); font-family: var(--mono); }
+
+.talking-points { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.talking-point { display: flex; gap: 12px; align-items: flex-start; }
+.tp-num { width: 24px; height: 24px; border-radius: 50%; background: var(--trellis); color: white; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.tp-text { font-size: 14px; color: var(--text-2); line-height: 1.7; }
+
+.friction-item { background: var(--red-bg); border: 1px solid var(--red-bd); border-radius: 6px; padding: 12px 16px; margin-bottom: 10px; font-size: 13px; color: var(--text-2); line-height: 1.6; }
+.friction-item:last-child { margin-bottom: 0; }
+
+.milestone-chip { display: inline-block; background: var(--trellis-lt); color: var(--trellis); border: 1px solid var(--trellis-mid); border-radius: 4px; padding: 2px 8px; font-size: 11px; font-family: var(--mono); font-weight: 600; margin-bottom: 16px; }
+
+.report-footer { background: var(--bg); padding: 24px 48px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid var(--border); font-size: 11px; color: var(--text-3); }
+.footer-trellis { font-family: var(--mono); font-weight: 600; color: var(--trellis-mid); }
+
+/* ERROR */
+.error-box { background: var(--red-bg); border: 1px solid var(--red-bd); border-radius: 8px; padding: 14px 16px; font-size: 13px; color: var(--red); margin-top: 14px; display: none; }
+.error-box.visible { display: block; }
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .shell { padding: 16px 14px 60px; }
+  .account-grid { grid-template-columns: 1fr; }
+  .hero-metrics { grid-template-columns: repeat(3, 1fr); }
+  .milestone-row { grid-template-columns: repeat(2, 1fr); }
+  .usage-grid { grid-template-columns: repeat(2, 1fr); }
+  .report-cover { padding: 28px 24px; }
+  .report-body { padding: 0 24px; }
+  .report-footer { padding: 16px 24px; flex-direction: column; gap: 6px; text-align: center; }
+  .generate-area { flex-direction: column; text-align: center; }
+  .cover-meta-item { min-width: calc(50% - 14px); }
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="header-inner">
+    <div class="header-logo">T</div>
+    <div>
+      <div class="header-brand">Trellis</div>
+      <div class="header-tagline">Customer Engagement</div>
+    </div>
+    <div class="header-breadcrumb" id="breadcrumb" style="display:none">
+      <span class="breadcrumb-link" onclick="goToScreen1()">My Accounts</span>
+      <span class="breadcrumb-sep">/</span>
+      <span id="breadcrumb-account"></span>
+    </div>
+    <div class="header-csm" id="header-csm"></div>
+  </div>
+</header>
+
+<div class="shell">
+
+  <!-- ═══════════════════ SCREEN 1: ACCOUNT SELECTION ═══════════════════ -->
+  <div class="screen active" id="screen1">
+    <div class="screen1-header">
+      <div class="screen1-title">My Accounts</div>
+      <div class="screen1-sub" id="screen1-sub">Loading accounts...</div>
+    </div>
+    <div class="account-grid" id="account-grid"></div>
+  </div>
+
+  <!-- ═══════════════════ SCREEN 2: ACCOUNT DETAIL ═══════════════════ -->
+  <div class="screen" id="screen2">
+    <div class="back-btn" onclick="goToScreen1()">&#8592; Back to My Accounts</div>
+
+    <!-- HERO STRIP -->
+    <div class="account-hero" id="account-hero"></div>
+
+    <!-- MILESTONE DASHBOARD -->
+    <div class="section-card">
+      <div class="section-card-title">&#128197; Annual Engagement Journey</div>
+      <div class="milestone-track-label">Report Status</div>
+      <div class="milestone-row" id="milestone-report-row"></div>
+      <div class="milestone-track-label">Visit Status</div>
+      <div class="milestone-row" id="milestone-visit-row"></div>
+    </div>
+
+    <!-- USAGE SNAPSHOT -->
+    <div class="section-card">
+      <div class="section-card-title">&#128200; Usage Snapshot</div>
+      <div class="usage-grid" id="usage-grid"></div>
+      <div class="usage-narrative" id="usage-narrative"></div>
+    </div>
+
+    <!-- NPS VERBATIMS -->
+    <div class="section-card">
+      <div class="section-card-title">&#128172; Voice of the Customer</div>
+      <div class="verbatim-list" id="verbatim-list"></div>
+    </div>
+
+    <!-- GENERATE AREA -->
+    <div class="generate-area" id="generate-area">
+      <div>
+        <div class="generate-label" id="generate-label">Generate Engagement Report</div>
+        <div class="generate-sub" id="generate-sub"></div>
+      </div>
+      <button class="btn-generate" id="generate-btn" onclick="startGeneration()">
+        &#9997;&#65039; Generate Report Draft
+      </button>
+    </div>
+
+    <div class="error-box" id="error-box"></div>
+  </div>
+
+  <!-- ═══════════════════ SCREEN 3: GENERATING ═══════════════════ -->
+  <div class="screen" id="screen3">
+    <div class="gen-card">
+      <div class="gen-spinner"></div>
+      <div class="gen-title" id="gen-title">Reading account data...</div>
+      <div class="gen-step" id="gen-step">This takes about 30-45 seconds</div>
+      <div class="gen-progress" id="gen-progress"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ SCREEN 4: REPORT ═══════════════════ -->
+  <div class="screen" id="screen4">
+    <div class="report-toolbar">
+      <div class="report-toolbar-left">
+        <strong id="report-client-name"></strong> &mdash; Engagement Report
+        <span id="report-quarter-badge" style="margin-left:8px"></span>
+      </div>
+      <div class="report-toolbar-right">
+        <button class="btn-secondary" onclick="goToScreen2()">&#9998; Edit / Regenerate</button>
+        <button class="btn-primary" onclick="downloadReportPDF()">&#11015;&#65039; Download PDF</button>
+      </div>
+    </div>
+
+    <div class="report-wrap" id="report-wrap">
+      <!-- Populated by JS -->
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────
+const TRELLIS_DATA = {
+  "vendor": {
+    "name": "Trellis",
+    "tagline": "Learning that sticks. Relationships that last.",
+    "cs_team": [
+      {
+        "name": "Priya Menon",
+        "role": "Senior Customer Success Manager",
+        "accounts": [
+          "meridian-group",
+          "bharat-steel",
+          "apex-financial",
+          "greenfield-pharma"
+        ]
+      },
+      {
+        "name": "Karan Oberoi",
+        "role": "Customer Success Manager",
+        "accounts": [
+          "university-pune",
+          "delhi-technical",
+          "skyline-institute",
+          "rishihood-university"
+        ]
+      }
+    ]
+  },
+  "accounts": [
+    {
+      "id": "meridian-group",
+      "name": "Meridian Group",
+      "type": "Corporate L&D",
+      "industry": "Diversified Conglomerate",
+      "hq": "Mumbai",
+      "csm": "Priya Menon",
+      "health": "Healthy — Growing",
+      "tenure_years": 3,
+      "deal_value_inr": 4800000,
+      "licensed_seats": 2400,
+      "current_milestone": {
+        "quarter": "OND",
+        "label": "Growth Conversation",
+        "report_status": "Draft",
+        "visit_status": "Planned",
+        "visit_date": "2025-11-18"
+      },
+      "nps": {
+        "score": 72,
+        "previous_score": 65,
+        "respondents": 38
+      },
+      "open_tickets": 2,
+      "usage": {
+        "active_users": 2184,
+        "licensed_seats": 2400,
+        "activation_rate_pct": 91,
+        "prev_quarter_activation_pct": 84,
+        "avg_logins_per_user_per_month": 6.4,
+        "course_completion_rate_pct": 78,
+        "prev_quarter_completion_pct": 71,
+        "top_modules": [
+          "Code of Conduct & Ethics",
+          "Travel & Expense Policy",
+          "Data Privacy & Security",
+          "Leadership Essentials",
+          "Unconscious Bias"
+        ],
+        "features_adopted": [
+          "Assessments",
+          "Mobile App",
+          "Manager Dashboard",
+          "Custom Branding",
+          "API Integration"
+        ],
+        "features_not_adopted": [
+          "Peer Learning Circles",
+          "Mentorship Module"
+        ],
+        "trend_narrative": "Activation and completion have both improved quarter-on-quarter. The October compliance certification cycle drove a spike in logins — 91% of licensed seats active, up from 84% last quarter. The mobile app accounts for 38% of sessions, the highest since onboarding."
+      },
+      "tickets": {
+        "total_this_quarter": 14,
+        "resolved": 12,
+        "open": 2,
+        "avg_resolution_hours": 9.2,
+        "sla_breach_count": 0,
+        "categories": {
+          "Bug": 3,
+          "How-To": 6,
+          "Feature Request": 4,
+          "Billing": 1
+        },
+        "recurring_issues": [
+          "Manager Dashboard filters reset on logout — raised twice, fix confirmed for Nov release"
+        ],
+        "open_ticket_details": [
+          {
+            "id": "TKT-4421",
+            "summary": "Manager Dashboard filter persistence",
+            "age_days": 11,
+            "severity": "Medium",
+            "status": "Fix in progress"
+          },
+          {
+            "id": "TKT-4489",
+            "summary": "Bulk certificate download timing out for batches >500",
+            "age_days": 4,
+            "severity": "Low",
+            "status": "Under investigation"
+          }
+        ],
+        "notable_positive": "Six of the 14 tickets this quarter were How-To queries — an indicator of active exploration rather than frustration. The team has been discovering features on their own."
+      },
+      "nps_verbatims": [
+        {
+          "respondent": "Anjali Sharma, Head of L&D",
+          "score": 9,
+          "comment": "Trellis has genuinely changed how we think about compliance training. Our completion rates have never been this high and the reporting gives me exactly what I need for board presentations."
+        },
+        {
+          "respondent": "Rohan Mehta, HR Business Partner",
+          "score": 8,
+          "comment": "The mobile app is a game changer for our field teams. Wish the peer learning feature was a bit more intuitive but overall very happy."
+        },
+        {
+          "respondent": "Deepa Nair, IT Manager",
+          "score": 7,
+          "comment": "API integration was smoother than expected. Support team knew what they were talking about. Minor Dashboard filter bug is slightly annoying but not a blocker."
+        },
+        {
+          "respondent": "Vikram Singh, CHRO",
+          "score": 9,
+          "comment": "Three years in and I still feel like Priya knows our organisation better than some of our own vendors. That personal attention is rare."
+        },
+        {
+          "respondent": "Meera Iyer, Compliance Officer",
+          "score": 8,
+          "comment": "The assessment quality has improved a lot. We are now using the test generator for our own policy updates which we did not expect to do when we signed up."
+        }
+      ],
+      "field_notes": [
+        {
+          "date": "2025-10-02",
+          "author": "Priya Menon",
+          "note": "Spoke with Anjali post the compliance certification cycle. She mentioned the CHRO has flagged L&D as a strategic priority for 2026 and is looking to expand scope beyond compliance into leadership development. She specifically asked about the Mentorship Module and whether it could be white-labelled with Meridian branding."
+        },
+        {
+          "date": "2025-10-28",
+          "author": "Priya Menon",
+          "note": "Vikram Singh (CHRO) joined a call unexpectedly — rare for him to engage directly. He mentioned Meridian is acquiring two smaller companies next year and wants to understand how Trellis handles multi-entity learning environments. This is a strong expansion signal — potential to 3x seat count."
+        },
+        {
+          "date": "2025-11-05",
+          "author": "Priya Menon",
+          "note": "Renewal confirmed verbally by Anjali. Formal paperwork expected by end of November. Pre-estimate for 2026 includes 800 additional seats for the acquired entities, pending board approval in December."
+        }
+      ],
+      "partnership_milestones": [
+        {
+          "date": "2022-11-01",
+          "type": "Onboarding",
+          "description": "Meridian Group signed as one of Trellis's first enterprise clients in the conglomerate segment. Priya personally led a 3-day onboarding sprint with their L&D team."
+        },
+        {
+          "date": "2023-04-15",
+          "type": "Product Influence",
+          "description": "Anjali's feedback on the Manager Dashboard directly shaped the Q2 2023 reporting module redesign. Her use case was cited internally as the benchmark during the product sprint."
+        },
+        {
+          "date": "2023-09-20",
+          "type": "Co-creation",
+          "description": "Meridian L&D team co-authored the best-practice playbook for compliance training on Trellis, published on the Trellis Resource Hub and downloaded by 140+ organisations."
+        },
+        {
+          "date": "2024-03-10",
+          "type": "Renewal",
+          "description": "Renewed for Year 2 with a 15% seat expansion. First renewal signed ahead of the contract end date — a first for the CSM team."
+        },
+        {
+          "date": "2024-08-01",
+          "type": "Recognition",
+          "description": "Meridian Group featured as a Trellis Customer Spotlight case study, presented at the L&D Conclave in Bengaluru. Anjali spoke as a guest panellist."
+        },
+        {
+          "date": "2025-03-15",
+          "type": "Renewal",
+          "description": "Year 3 renewal completed. Meridian added the API Integration module after their IT team requested a direct HRMS sync — something Trellis built within 6 weeks of the request."
+        },
+        {
+          "date": "2025-10-01",
+          "type": "Milestone",
+          "description": "Crossed 2,000 active learners — the first Trellis client in the corporate segment to reach this milestone within 3 years of onboarding."
+        }
+      ]
+    },
+    {
+      "id": "bharat-steel",
+      "name": "Bharat Steel Industries",
+      "type": "Corporate L&D",
+      "industry": "Manufacturing",
+      "hq": "Raipur",
+      "csm": "Priya Menon",
+      "health": "At Risk — Low Adoption",
+      "tenure_years": 2,
+      "deal_value_inr": 2200000,
+      "licensed_seats": 1800,
+      "current_milestone": {
+        "quarter": "JFM",
+        "label": "Retention Visit",
+        "report_status": "Draft",
+        "visit_status": "Planned",
+        "visit_date": "2026-01-22"
+      },
+      "nps": {
+        "score": 34,
+        "previous_score": 51,
+        "respondents": 12
+      },
+      "open_tickets": 7,
+      "usage": {
+        "active_users": 612,
+        "licensed_seats": 1800,
+        "activation_rate_pct": 34,
+        "prev_quarter_activation_pct": 48,
+        "avg_logins_per_user_per_month": 1.8,
+        "course_completion_rate_pct": 29,
+        "prev_quarter_completion_pct": 41,
+        "top_modules": [
+          "Safety Induction",
+          "Fire & Hazard Compliance"
+        ],
+        "features_adopted": [
+          "Course Library"
+        ],
+        "features_not_adopted": [
+          "Assessments",
+          "Mobile App",
+          "Manager Dashboard",
+          "Custom Branding",
+          "API Integration"
+        ],
+        "trend_narrative": "Activation has dropped sharply — from 48% to 34% this quarter. Only the mandatory Safety Induction course is seeing consistent usage. The departure of their L&D head in August has left a gap in internal ownership. A temporary coordinator is managing the account but does not have the authority or bandwidth to drive adoption."
+      },
+      "tickets": {
+        "total_this_quarter": 21,
+        "resolved": 14,
+        "open": 7,
+        "avg_resolution_hours": 31.4,
+        "sla_breach_count": 3,
+        "categories": {
+          "Bug": 8,
+          "How-To": 9,
+          "Feature Request": 2,
+          "Billing": 2
+        },
+        "recurring_issues": [
+          "Login issues for shop-floor users on low-bandwidth connections — reported 5 times",
+          "Course not saving progress on older Android devices — 3 tickets"
+        ],
+        "open_ticket_details": [
+          {
+            "id": "TKT-4102",
+            "summary": "Login failure on low-bandwidth connections",
+            "age_days": 34,
+            "severity": "High",
+            "status": "Engineering review pending"
+          },
+          {
+            "id": "TKT-4198",
+            "summary": "Progress not saving on Android 9 devices",
+            "age_days": 28,
+            "severity": "High",
+            "status": "Workaround provided, permanent fix Q1 2026"
+          },
+          {
+            "id": "TKT-4301",
+            "summary": "Billing discrepancy — invoice vs. PO mismatch",
+            "age_days": 19,
+            "severity": "Medium",
+            "status": "Finance team review"
+          },
+          {
+            "id": "TKT-4388",
+            "summary": "Bulk enrolment error for 200+ users",
+            "age_days": 14,
+            "severity": "Medium",
+            "status": "Under investigation"
+          },
+          {
+            "id": "TKT-4401",
+            "summary": "Course thumbnail not loading on Safari",
+            "age_days": 9,
+            "severity": "Low",
+            "status": "Fix in next release"
+          },
+          {
+            "id": "TKT-4445",
+            "summary": "Password reset email going to spam",
+            "age_days": 6,
+            "severity": "Medium",
+            "status": "Email config review"
+          },
+          {
+            "id": "TKT-4471",
+            "summary": "Manager Dashboard showing incorrect completion count",
+            "age_days": 3,
+            "severity": "High",
+            "status": "Investigating"
+          }
+        ],
+        "notable_positive": null
+      },
+      "nps_verbatims": [
+        {
+          "respondent": "Temporary L&D Coordinator",
+          "score": 5,
+          "comment": "We are struggling to get people to log in. The shop floor workers find it hard to use and our IT team is not available to help them. We need simpler interfaces."
+        },
+        {
+          "respondent": "Plant Safety Officer, Raipur",
+          "score": 4,
+          "comment": "The safety courses are good in content but the system keeps logging people out mid-course. They lose their progress and give up."
+        },
+        {
+          "respondent": "HR Manager",
+          "score": 3,
+          "comment": "When our L&D head was here things worked better. Now we do not have someone internally who knows the tool well enough to push adoption."
+        },
+        {
+          "respondent": "IT Coordinator",
+          "score": 6,
+          "comment": "Technical support response time has been slow. Some issues have been open for weeks. We expected faster resolution for a paid platform."
+        }
+      ],
+      "field_notes": [
+        {
+          "date": "2025-10-15",
+          "author": "Priya Menon",
+          "note": "Called the temporary coordinator Sunita. She is clearly overwhelmed and has not been able to drive any of the planned Q3 learning calendar. The previous L&D head Ramesh Verma left in August without a handover plan. Sunita confirmed they are conducting an internal hiring process but no timeline yet."
+        },
+        {
+          "date": "2025-11-08",
+          "author": "Priya Menon",
+          "note": "Escalated the bandwidth-related login issue to our engineering team. Trellis product team has confirmed a lightweight mode is on the Q1 2026 roadmap — this would directly address Bharat Steel's shop-floor use case. Shared this update with Sunita who seemed relieved."
+        },
+        {
+          "date": "2025-12-02",
+          "author": "Priya Menon",
+          "note": "Received a call from the CFO's office asking about renewal terms. This is a red flag — usually signals a commercial conversation is being escalated internally. Need to involve our regional sales head before the January visit."
+        }
+      ],
+      "partnership_milestones": [
+        {
+          "date": "2024-01-10",
+          "type": "Onboarding",
+          "description": "Bharat Steel onboarded with a clear brief — digitise mandatory safety and compliance training for 1,800 workers across 3 plants. Ramesh Verma (L&D Head) was an enthusiastic champion from day one."
+        },
+        {
+          "date": "2024-05-20",
+          "type": "Product Influence",
+          "description": "Ramesh's feedback on offline course access for low-connectivity environments was raised with the Trellis product team. Acknowledged and added to the roadmap."
+        },
+        {
+          "date": "2024-09-01",
+          "type": "Risk Event",
+          "description": "Ramesh Verma resigned. No internal successor identified. Trellis CSM flagged this as a high-risk event and requested a stakeholder mapping meeting — request was deferred by the client."
+        },
+        {
+          "date": "2025-02-14",
+          "type": "Renewal",
+          "description": "Renewed for Year 2, though with some negotiation on pricing. Deal retained at original value but with pressure on discount."
+        }
+      ]
+    },
+    {
+      "id": "university-pune",
+      "name": "University of Pune",
+      "type": "University",
+      "industry": "Higher Education",
+      "hq": "Pune",
+      "csm": "Karan Oberoi",
+      "health": "Healthy — Stable",
+      "tenure_years": 4,
+      "deal_value_inr": 3600000,
+      "licensed_seats": 12000,
+      "current_milestone": {
+        "quarter": "JAS",
+        "label": "Courtesy Visit",
+        "report_status": "Not Started",
+        "visit_status": "Not Scheduled",
+        "visit_date": null
+      },
+      "nps": {
+        "score": 61,
+        "previous_score": 58,
+        "respondents": 94
+      },
+      "open_tickets": 3,
+      "usage": {
+        "active_users": 8640,
+        "licensed_seats": 12000,
+        "activation_rate_pct": 72,
+        "prev_quarter_activation_pct": 69,
+        "avg_logins_per_user_per_month": 4.1,
+        "course_completion_rate_pct": 64,
+        "prev_quarter_completion_pct": 61,
+        "top_modules": [
+          "Research Ethics",
+          "Anti-Ragging Compliance",
+          "Digital Literacy",
+          "Faculty Development",
+          "Library & Information Skills"
+        ],
+        "features_adopted": [
+          "Assessments",
+          "Custom Branding",
+          "Manager Dashboard",
+          "Certificate Issuance"
+        ],
+        "features_not_adopted": [
+          "Mobile App",
+          "API Integration",
+          "Peer Learning Circles"
+        ],
+        "trend_narrative": "Usage is steady and slowly improving. The July-September semester opening drove a predictable spike in new user activations. Semester-driven usage means engagement peaks and troughs are expected — the 72% activation rate is solid for a university of this size. Certificate issuance has become a major use case, with over 4,200 certificates generated this quarter."
+      },
+      "tickets": {
+        "total_this_quarter": 18,
+        "resolved": 15,
+        "open": 3,
+        "avg_resolution_hours": 14.6,
+        "sla_breach_count": 1,
+        "categories": {
+          "Bug": 4,
+          "How-To": 10,
+          "Feature Request": 3,
+          "Billing": 1
+        },
+        "recurring_issues": [
+          "Faculty asking how to set department-level completion deadlines — How-To pattern suggests a training gap"
+        ],
+        "open_ticket_details": [
+          {
+            "id": "TKT-4290",
+            "summary": "Bulk certificate issuance failing for batches >1000",
+            "age_days": 16,
+            "severity": "Medium",
+            "status": "Fix being tested"
+          },
+          {
+            "id": "TKT-4380",
+            "summary": "Department admin role permissions not saving",
+            "age_days": 8,
+            "severity": "Medium",
+            "status": "Under investigation"
+          },
+          {
+            "id": "TKT-4460",
+            "summary": "Video content buffering on campus WiFi network",
+            "age_days": 5,
+            "severity": "Low",
+            "status": "Network config guidance sent"
+          }
+        ],
+        "notable_positive": "Ten of 18 tickets were How-To queries from new faculty — high but expected at semester start. The university's internal IT team proactively resolved four potential issues before they became tickets, citing the Trellis admin documentation as their reference."
+      },
+      "nps_verbatims": [
+        {
+          "respondent": "Dr. Meena Kulkarni, Dean of Students",
+          "score": 8,
+          "comment": "Anti-ragging compliance completion rates have gone from 60% to 88% since we moved to Trellis. The automated reminders are doing the work for us."
+        },
+        {
+          "respondent": "Prof. Suresh Rao, IT Head",
+          "score": 7,
+          "comment": "Four years in, the platform is part of our infrastructure now. Karan is always responsive. I would like to see a mobile app that works offline for students in low-connectivity areas."
+        },
+        {
+          "respondent": "Faculty Member",
+          "score": 6,
+          "comment": "Good platform but setting up department-level courses still feels complicated. Would benefit from better guided setup."
+        },
+        {
+          "respondent": "Library & Information Head",
+          "score": 8,
+          "comment": "The library skills module has been a big win for first-year students. We created it ourselves using the course builder and it took far less time than expected."
+        },
+        {
+          "respondent": "Student Representative",
+          "score": 7,
+          "comment": "Most students access it on their phones but the mobile experience could be better. Desktop works well."
+        }
+      ],
+      "field_notes": [
+        {
+          "date": "2025-08-20",
+          "author": "Karan Oberoi",
+          "note": "Attended the semester opening coordination meeting virtually. University planning a major accreditation review in 2026 — NAAC reaccreditation. Trellis compliance reports and certificate records will likely be referenced as evidence. This is a strong retention signal — switching platforms before an accreditation would be disruptive."
+        },
+        {
+          "date": "2025-09-15",
+          "author": "Karan Oberoi",
+          "note": "Quick check-in with Dr. Kulkarni. She mentioned the Vice Chancellor wants a presentation on digital learning adoption at the next Academic Council meeting in October. Offered to prepare a usage insights report for her — she accepted. Delivered it within 48 hours."
+        },
+        {
+          "date": "2025-10-22",
+          "author": "Karan Oberoi",
+          "note": "Usage insights report well received at Academic Council. VC specifically mentioned Trellis by name in the minutes as a successful digital initiative. Karan to follow up on potential expansion to affiliated colleges — currently unlicensed but using pirated content."
+        }
+      ],
+      "partnership_milestones": [
+        {
+          "date": "2022-07-01",
+          "type": "Onboarding",
+          "description": "University of Pune became one of Trellis's first university clients. The deal was championed by Dr. Kulkarni who had used a previous Trellis product in her earlier institution."
+        },
+        {
+          "date": "2022-12-10",
+          "type": "Product Influence",
+          "description": "UoP's request for bulk certificate issuance led to the feature being prioritised and shipped in Q1 2023 — now one of Trellis's most-used features across all university clients."
+        },
+        {
+          "date": "2023-08-15",
+          "type": "Co-creation",
+          "description": "Karan worked with the UoP IT team to create an implementation guide for large universities, now used as the standard onboarding template for all new university accounts."
+        },
+        {
+          "date": "2024-07-01",
+          "type": "Renewal",
+          "description": "Year 3 renewal completed. No pricing negotiation — first renewal where UoP accepted the standard rate without pushback."
+        },
+        {
+          "date": "2025-03-20",
+          "type": "Recognition",
+          "description": "University of Pune's anti-ragging compliance programme featured in a UGC circular as a model implementation. Trellis cited as the delivery platform."
+        },
+        {
+          "date": "2025-10-01",
+          "type": "Renewal",
+          "description": "Year 4 renewal discussion initiated ahead of schedule following the Academic Council presentation."
+        }
+      ]
+    },
+    {
+      "id": "skyline-institute",
+      "name": "Skyline Institute of Management",
+      "type": "College",
+      "industry": "Management Education",
+      "hq": "Nagpur",
+      "csm": "Karan Oberoi",
+      "health": "New — Onboarding",
+      "tenure_years": 0.5,
+      "deal_value_inr": 480000,
+      "licensed_seats": 600,
+      "current_milestone": {
+        "quarter": "JFM",
+        "label": "Retention Visit",
+        "report_status": "Not Started",
+        "visit_status": "Not Scheduled",
+        "visit_date": null
+      },
+      "nps": {
+        "score": 58,
+        "previous_score": null,
+        "respondents": 8
+      },
+      "open_tickets": 4,
+      "usage": {
+        "active_users": 312,
+        "licensed_seats": 600,
+        "activation_rate_pct": 52,
+        "prev_quarter_activation_pct": 31,
+        "avg_logins_per_user_per_month": 3.2,
+        "course_completion_rate_pct": 41,
+        "prev_quarter_completion_pct": 19,
+        "top_modules": [
+          "Business Communication",
+          "Entrepreneurship Fundamentals",
+          "Excel & Data Skills"
+        ],
+        "features_adopted": [
+          "Course Library",
+          "Assessments"
+        ],
+        "features_not_adopted": [
+          "Custom Branding",
+          "Manager Dashboard",
+          "Certificate Issuance",
+          "Mobile App"
+        ],
+        "trend_narrative": "Early momentum is visible — activation doubled from 31% to 52% in just one quarter. Students who have activated are engaging well, with an average of 3.2 logins per month. The challenge is the 48% who have not yet logged in, largely due to faculty not having formally introduced the platform in class."
+      },
+      "tickets": {
+        "total_this_quarter": 11,
+        "resolved": 7,
+        "open": 4,
+        "avg_resolution_hours": 19.8,
+        "sla_breach_count": 0,
+        "categories": {
+          "Bug": 2,
+          "How-To": 8,
+          "Feature Request": 1,
+          "Billing": 0
+        },
+        "recurring_issues": [
+          "How to embed a YouTube video in a course — asked by 3 different faculty members"
+        ],
+        "open_ticket_details": [
+          {
+            "id": "TKT-4411",
+            "summary": "Faculty unable to create quiz with image-based questions",
+            "age_days": 12,
+            "severity": "Medium",
+            "status": "Workaround shared"
+          },
+          {
+            "id": "TKT-4433",
+            "summary": "Student roster import failing for batch of 312",
+            "age_days": 8,
+            "severity": "Medium",
+            "status": "Under investigation"
+          },
+          {
+            "id": "TKT-4451",
+            "summary": "How to set up automatic reminders for incomplete courses",
+            "age_days": 5,
+            "severity": "Low",
+            "status": "Guide sent, awaiting confirmation"
+          },
+          {
+            "id": "TKT-4468",
+            "summary": "Course completion not reflecting in admin dashboard",
+            "age_days": 3,
+            "severity": "Medium",
+            "status": "Investigating"
+          }
+        ],
+        "notable_positive": "Eight of 11 tickets were How-To queries — a healthy pattern for a client this new. Faculty are actively exploring the platform and asking questions rather than giving up."
+      },
+      "nps_verbatims": [
+        {
+          "respondent": "Prof. Alok Sharma, Director",
+          "score": 8,
+          "comment": "Early days but the platform is better than what we were using before. Karan has been very hands-on which I appreciate. Let us see how the year goes."
+        },
+        {
+          "respondent": "Faculty Member",
+          "score": 6,
+          "comment": "Some features are not immediately intuitive. Had to raise tickets for things I expected to be simpler. But the support team is helpful."
+        },
+        {
+          "respondent": "Student",
+          "score": 7,
+          "comment": "I like that I can access courses anytime. The Business Communication module is actually interesting. Wish there was a proper mobile app."
+        }
+      ],
+      "field_notes": [
+        {
+          "date": "2025-10-08",
+          "author": "Karan Oberoi",
+          "note": "Onboarding session with faculty went well. 14 out of 18 faculty attended. Prof. Sharma (Director) opened the session which set a good tone. Three faculty are actively building their own courses — more than expected at this stage."
+        },
+        {
+          "date": "2025-11-12",
+          "author": "Karan Oberoi",
+          "note": "Check-in call with Prof. Sharma. Mentioned the MBA Director wants to use Trellis for their upcoming placement preparation module. A small but visible expansion signal at just 6 months in. Also flagged that the student roster import issue is causing minor frustration — needs resolution before the semester exam cycle in December."
+        },
+        {
+          "date": "2025-12-05",
+          "author": "Karan Oberoi",
+          "note": "Helped Faculty Member Rashmi set up her first original course on Entrepreneurship — she built it entirely herself with a 30-minute walkthrough from us. She was visibly pleased with the output. Moments like this are important for early-stage adoption."
+        }
+      ],
+      "partnership_milestones": [
+        {
+          "date": "2025-07-01",
+          "type": "Onboarding",
+          "description": "Skyline signed after a competitive evaluation against two other LMS platforms. Trellis won primarily on ease of use and the quality of onboarding support promised during the sales process."
+        },
+        {
+          "date": "2025-10-08",
+          "type": "Milestone",
+          "description": "First faculty-created course went live on the platform — built independently by Prof. Rashmi Tiwari without CSM support. A strong early signal of platform confidence."
+        },
+        {
+          "date": "2025-12-01",
+          "type": "Milestone",
+          "description": "First 300 active learners milestone reached, 5 months into the contract."
+        }
+      ]
+    },
+    {
+      "id": "apex-financial",
+      "name": "Apex Financial Services",
+      "type": "Corporate L&D",
+      "industry": "Financial Services & NBFC",
+      "hq": "Hyderabad",
+      "csm": "Priya Menon",
+      "health": "Strong Relationship — Collection Overdue",
+      "tenure_years": 2.5,
+      "deal_value_inr": 3100000,
+      "licensed_seats": 1600,
+      "current_milestone": {
+        "quarter": "AMJ",
+        "label": "Annual Planning",
+        "report_status": "Draft",
+        "visit_status": "Completed",
+        "visit_date": "2025-05-14"
+      },
+      "nps": {
+        "score": 78,
+        "previous_score": 74,
+        "respondents": 29
+      },
+      "open_tickets": 1,
+      "usage": {
+        "active_users": 1488,
+        "licensed_seats": 1600,
+        "activation_rate_pct": 93,
+        "prev_quarter_activation_pct": 89,
+        "avg_logins_per_user_per_month": 7.2,
+        "course_completion_rate_pct": 84,
+        "prev_quarter_completion_pct": 79,
+        "top_modules": [
+          "SEBI Compliance & Ethics",
+          "Anti-Money Laundering",
+          "Customer Data Protection",
+          "Sales Excellence",
+          "Leadership for Managers"
+        ],
+        "features_adopted": [
+          "Assessments",
+          "Manager Dashboard",
+          "Custom Branding",
+          "Certificate Issuance",
+          "API Integration"
+        ],
+        "features_not_adopted": [
+          "Peer Learning Circles",
+          "Mobile App"
+        ],
+        "trend_narrative": "Apex is one of Trellis's highest-performing accounts by usage metrics. 93% activation, 84% completion, and an average of 7.2 logins per user per month. Their SEBI compliance certification cycle in April drove a concentrated usage peak, handled without any system strain. The Manager Dashboard is used weekly by 34 team leaders to track their team's learning progress."
+      },
+      "tickets": {
+        "total_this_quarter": 8,
+        "resolved": 7,
+        "open": 1,
+        "avg_resolution_hours": 6.8,
+        "sla_breach_count": 0,
+        "categories": {
+          "Bug": 1,
+          "How-To": 4,
+          "Feature Request": 3,
+          "Billing": 0
+        },
+        "recurring_issues": [],
+        "open_ticket_details": [
+          {
+            "id": "TKT-4322",
+            "summary": "Feature request — ability to schedule course release dates in advance",
+            "age_days": 22,
+            "severity": "Low",
+            "status": "Added to product backlog"
+          }
+        ],
+        "notable_positive": "Three of the eight tickets were feature requests — Apex is one of the most active product feedback contributors in the Trellis client base. Their suggestions on assessment randomisation were incorporated into the Q3 release."
+      },
+      "nps_verbatims": [
+        {
+          "respondent": "Kavitha Reddy, Chief Learning Officer",
+          "score": 9,
+          "comment": "Trellis is not just a platform for us — it is a compliance backbone. Our SEBI audit passed without a single query on training records for the first time ever. That is directly attributable to Trellis."
+        },
+        {
+          "respondent": "Compliance Manager",
+          "score": 9,
+          "comment": "The audit trail and certificate management are exceptional. I have recommended Trellis to two other NBFCs in my network."
+        },
+        {
+          "respondent": "Regional Sales Head",
+          "score": 8,
+          "comment": "Our sales team's product knowledge scores have gone up 22% since we moved certification to Trellis. The assessments are genuinely harder and more relevant than what we had before."
+        },
+        {
+          "respondent": "IT Head",
+          "score": 7,
+          "comment": "API integration with our HRMS was cleaner than expected. One minor hiccup during data sync that was resolved quickly. Overall very satisfied."
+        }
+      ],
+      "field_notes": [
+        {
+          "date": "2025-05-14",
+          "author": "Priya Menon",
+          "note": "Annual planning meeting attended. Kavitha confirmed Apex wants to expand to include a Sales Excellence track for front-line agents. This could add 400 seats. She also mentioned the CFO is happy with the ROI — compliance audit passed clean and they avoided a potential regulatory fine."
+        },
+        {
+          "date": "2025-06-02",
+          "author": "Priya Menon",
+          "note": "Renewal invoice sent. No acknowledgement received. Followed up by email — Kavitha out of town, auto-reply. Finance team contact unreachable. This is the second renewal that has seen delayed payment from Apex — a pattern worth flagging."
+        },
+        {
+          "date": "2025-07-15",
+          "author": "Priya Menon",
+          "note": "Renewal invoice now 45 days overdue. Called Kavitha directly — she was apologetic, said the Finance team changed their payment process post-audit and all vendor invoices above a threshold now need additional sign-offs. She has escalated internally. Expects resolution within 2 weeks."
+        },
+        {
+          "date": "2025-08-01",
+          "author": "Priya Menon",
+          "note": "Invoice still unpaid — 75 days overdue. Escalated to Trellis Finance team for formal follow-up. Relationship with Kavitha remains strong but the commercial track is a concern. Keeping the two conversations separate to protect the relationship."
+        }
+      ],
+      "partnership_milestones": [
+        {
+          "date": "2023-01-20",
+          "type": "Onboarding",
+          "description": "Apex onboarded mid-year in a fast-turnaround deal driven by an upcoming SEBI compliance deadline. Priya managed the 30-day go-live to meet their audit timeline."
+        },
+        {
+          "date": "2023-06-30",
+          "type": "Milestone",
+          "description": "Apex passed their first SEBI compliance audit with full training records available on Trellis — zero queries from auditors. The CLO sent a personal thank-you note to the Trellis team."
+        },
+        {
+          "date": "2024-04-01",
+          "type": "Product Influence",
+          "description": "Kavitha's request for assessment randomisation to prevent answer sharing was implemented in the Q3 2023 release. Her use case is now cited in Trellis product demos."
+        },
+        {
+          "date": "2024-06-15",
+          "type": "Renewal",
+          "description": "Year 1 renewal completed — late by 38 days due to internal procurement changes at Apex. Pattern noted."
+        },
+        {
+          "date": "2025-01-10",
+          "type": "Recognition",
+          "description": "Apex featured in Trellis's annual customer report as a compliance excellence case study. Kavitha quoted in the publication."
+        }
+      ]
+    },
+    {
+      "id": "delhi-technical",
+      "name": "Delhi Technical University",
+      "type": "University",
+      "industry": "Technical Education",
+      "hq": "Delhi",
+      "csm": "Karan Oberoi",
+      "health": "Recovering — Post-Crisis",
+      "tenure_years": 3,
+      "deal_value_inr": 2800000,
+      "licensed_seats": 9000,
+      "current_milestone": {
+        "quarter": "JAS",
+        "label": "Courtesy Visit",
+        "report_status": "Draft",
+        "visit_status": "Completed",
+        "visit_date": "2025-09-10"
+      },
+      "nps": {
+        "score": 52,
+        "previous_score": 31,
+        "respondents": 67
+      },
+      "open_tickets": 5,
+      "usage": {
+        "active_users": 5940,
+        "licensed_seats": 9000,
+        "activation_rate_pct": 66,
+        "prev_quarter_activation_pct": 44,
+        "avg_logins_per_user_per_month": 3.8,
+        "course_completion_rate_pct": 57,
+        "prev_quarter_completion_pct": 38,
+        "top_modules": [
+          "Engineering Ethics",
+          "Research Methodology",
+          "Industry 4.0 Fundamentals",
+          "Soft Skills for Engineers",
+          "Patent & IP Basics"
+        ],
+        "features_adopted": [
+          "Assessments",
+          "Certificate Issuance",
+          "Custom Branding"
+        ],
+        "features_not_adopted": [
+          "Manager Dashboard",
+          "Mobile App",
+          "API Integration",
+          "Peer Learning Circles"
+        ],
+        "trend_narrative": "A significant recovery quarter. Activation has risen from 44% to 66% and completion from 38% to 57% following the resolution of a major platform outage in Q1 that affected 3 weeks of the semester. The crisis response plan put in place by Trellis — extended deadlines, free additional content, dedicated support — has helped rebuild confidence. Momentum is clearly returning but is still below where it was before the incident."
+      },
+      "tickets": {
+        "total_this_quarter": 23,
+        "resolved": 18,
+        "open": 5,
+        "avg_resolution_hours": 18.2,
+        "sla_breach_count": 2,
+        "categories": {
+          "Bug": 9,
+          "How-To": 7,
+          "Feature Request": 2,
+          "Billing": 5
+        },
+        "recurring_issues": [
+          "Billing dispute related to Q1 outage — compensation credit still being processed",
+          "Video upload size limits affecting faculty-created content"
+        ],
+        "open_ticket_details": [
+          {
+            "id": "TKT-4155",
+            "summary": "Q1 outage compensation credit — billing reconciliation",
+            "age_days": 41,
+            "severity": "High",
+            "status": "Finance team review ongoing"
+          },
+          {
+            "id": "TKT-4280",
+            "summary": "Video upload size limit too restrictive for lecture recordings",
+            "age_days": 24,
+            "severity": "Medium",
+            "status": "Policy review in progress"
+          },
+          {
+            "id": "TKT-4361",
+            "summary": "Student completion records missing for pre-outage period",
+            "age_days": 17,
+            "severity": "High",
+            "status": "Data recovery in progress"
+          },
+          {
+            "id": "TKT-4420",
+            "summary": "Department admin unable to generate department-level reports",
+            "age_days": 10,
+            "severity": "Medium",
+            "status": "Permissions fix being tested"
+          },
+          {
+            "id": "TKT-4458",
+            "summary": "Certificate template not reflecting updated university logo",
+            "age_days": 6,
+            "severity": "Low",
+            "status": "Design team updating"
+          }
+        ],
+        "notable_positive": "Five billing-related tickets are all connected to the Q1 outage compensation — once this is resolved, the organic ticket volume is actually low. The recovery in usage metrics despite the lingering billing issue is a sign that the academic community has genuinely moved on."
+      },
+      "nps_verbatims": [
+        {
+          "respondent": "Prof. Anand Krishnan, Registrar",
+          "score": 7,
+          "comment": "The outage was painful but I will give credit — Karan was on calls with us every single day during the crisis. That responsiveness is what kept us from walking away. We are seeing things recover now."
+        },
+        {
+          "respondent": "Faculty Member",
+          "score": 5,
+          "comment": "Three weeks of disruption during mid-semester hurt us. Students were frustrated and so were faculty. The situation is better now but it took a while."
+        },
+        {
+          "respondent": "HOD, Computer Science",
+          "score": 6,
+          "comment": "The platform itself is good when it works. I hope the infrastructure investment promised post-outage actually happens. We were promised an uptime improvement."
+        },
+        {
+          "respondent": "Student Union Representative",
+          "score": 7,
+          "comment": "After the issues earlier in the year things have been stable. The Industry 4.0 module is genuinely useful for placements. Students appreciate it."
+        }
+      ],
+      "field_notes": [
+        {
+          "date": "2025-07-01",
+          "author": "Karan Oberoi",
+          "note": "Q1 post-mortem completed with the Registrar's office. DTU formally accepted Trellis's recovery plan: 60-day SLA credit, complimentary access to 5 new modules for the semester, and a fortnightly uptime report for Q3. This was a hard conversation but the Registrar confirmed they want to continue the relationship."
+        },
+        {
+          "date": "2025-08-15",
+          "author": "Karan Oberoi",
+          "note": "Uptime has been 99.94% for the past 6 weeks following the infrastructure upgrade. Shared this data with the Registrar proactively — not waiting for them to ask. He responded positively."
+        },
+        {
+          "date": "2025-09-10",
+          "author": "Karan Oberoi",
+          "note": "Courtesy visit conducted at campus. Attended a faculty orientation session. The mood was clearly better than expected. HOD of Computer Science specifically asked about the Industry 4.0 module expansion — a sign that engagement is deepening again. Billing compensation credit still unresolved — this needs to close before the next visit."
+        }
+      ],
+      "partnership_milestones": [
+        {
+          "date": "2023-01-15",
+          "type": "Onboarding",
+          "description": "DTU onboarded as Trellis's largest university client by seat count at the time. The deal was signed after a 6-month procurement process involving 4 departments."
+        },
+        {
+          "date": "2023-11-01",
+          "type": "Product Influence",
+          "description": "DTU's faculty raised the need for lecture-format video hosting — not just embedded links. This shaped the Trellis native video upload feature launched in Q1 2024."
+        },
+        {
+          "date": "2024-06-01",
+          "type": "Renewal",
+          "description": "Year 2 renewal completed with a 10% seat expansion for new engineering departments."
+        },
+        {
+          "date": "2025-02-10",
+          "type": "Risk Event",
+          "description": "Platform outage lasting 18 days due to a data centre infrastructure failure. Affected DTU's mid-semester learning calendar. Trellis declared a severity-1 incident and deployed a full response team."
+        },
+        {
+          "date": "2025-03-15",
+          "type": "Recovery",
+          "description": "Trellis completed full data recovery, infrastructure upgrade, and compensation package. DTU Registrar publicly acknowledged the recovery effort in an internal memo."
+        }
+      ]
+    },
+    {
+      "id": "greenfield-pharma",
+      "name": "Greenfield Pharma",
+      "type": "Corporate L&D",
+      "industry": "Pharmaceuticals",
+      "hq": "Ahmedabad",
+      "csm": "Priya Menon",
+      "health": "High Growth — Upsell Ready",
+      "tenure_years": 1.5,
+      "deal_value_inr": 1900000,
+      "licensed_seats": 900,
+      "current_milestone": {
+        "quarter": "OND",
+        "label": "Growth Conversation",
+        "report_status": "Not Started",
+        "visit_status": "Planned",
+        "visit_date": "2025-11-25"
+      },
+      "nps": {
+        "score": 81,
+        "previous_score": 77,
+        "respondents": 22
+      },
+      "open_tickets": 1,
+      "usage": {
+        "active_users": 882,
+        "licensed_seats": 900,
+        "activation_rate_pct": 98,
+        "prev_quarter_activation_pct": 91,
+        "avg_logins_per_user_per_month": 8.1,
+        "course_completion_rate_pct": 88,
+        "prev_quarter_completion_pct": 82,
+        "top_modules": [
+          "GMP Compliance",
+          "Pharmacovigilance",
+          "Clinical Data Integrity",
+          "People Management for Scientists",
+          "Presentation & Communication"
+        ],
+        "features_adopted": [
+          "Assessments",
+          "Manager Dashboard",
+          "Custom Branding",
+          "Certificate Issuance",
+          "Mobile App",
+          "API Integration"
+        ],
+        "features_not_adopted": [
+          "Peer Learning Circles"
+        ],
+        "trend_narrative": "Greenfield is Trellis's fastest-growing account by usage velocity. 98% activation at just 18 months. They have adopted every major feature including the Mobile App and API Integration within the first year — almost unheard of. The GMP Compliance and Pharmacovigilance modules are used in mandatory quarterly certifications for all employees, driving consistently high logins."
+      },
+      "tickets": {
+        "total_this_quarter": 6,
+        "resolved": 5,
+        "open": 1,
+        "avg_resolution_hours": 5.4,
+        "sla_breach_count": 0,
+        "categories": {
+          "Bug": 1,
+          "How-To": 2,
+          "Feature Request": 3,
+          "Billing": 0
+        },
+        "recurring_issues": [],
+        "open_ticket_details": [
+          {
+            "id": "TKT-4444",
+            "summary": "Feature request — multi-language support for Gujarati content",
+            "age_days": 9,
+            "severity": "Low",
+            "status": "Added to product roadmap discussion"
+          }
+        ],
+        "notable_positive": "Three feature requests in six tickets — Greenfield is one of Trellis's most engaged product feedback contributors despite being a relatively new client. The Gujarati language request reflects their ambition to extend learning to their plant-floor workforce."
+      },
+      "nps_verbatims": [
+        {
+          "respondent": "Dr. Hetal Shah, VP Learning & Development",
+          "score": 10,
+          "comment": "We went from 0 to 98% on our mandatory GMP training within 18 months. Our last CDSCO inspection specifically praised our training documentation. Trellis is core infrastructure for us now."
+        },
+        {
+          "respondent": "Compliance Head",
+          "score": 9,
+          "comment": "The certificate management and audit trail are the best I have seen in any LMS. Our regulatory submissions are so much cleaner."
+        },
+        {
+          "respondent": "Plant HR Manager",
+          "score": 8,
+          "comment": "Our plant floor workers use the mobile app in Gujarati but have to navigate an English interface. If Trellis adds Gujarati, our activation will probably hit 100%."
+        },
+        {
+          "respondent": "IT Manager",
+          "score": 8,
+          "comment": "API integration with our SAP HR module was done in under 3 weeks. Very impressed."
+        }
+      ],
+      "field_notes": [
+        {
+          "date": "2025-10-01",
+          "author": "Priya Menon",
+          "note": "Call with Dr. Shah. Greenfield is opening two new manufacturing plants in Surat and Vadodara in Q1 2026. Each plant will need independent learning tracks with GMP and local regulatory compliance content. This is a clear doubling of seat requirements — from 900 to approximately 1,800-2,000."
+        },
+        {
+          "date": "2025-10-20",
+          "author": "Priya Menon",
+          "note": "Dr. Shah mentioned that their parent company Global Pharma International (GPI) is evaluating LMS platforms for their India operations. Greenfield's experience with Trellis is a key reference. If GPI signs, this could be the largest deal in Trellis history."
+        },
+        {
+          "date": "2025-11-10",
+          "author": "Priya Menon",
+          "note": "Pre-call with Dr. Shah ahead of November visit. She confirmed the plant expansion is board-approved. Wants to discuss a multi-site licencing model and whether Trellis can support Gujarati and Hindi language interfaces by Q2 2026. This is a well-prepared customer — she will come with specific asks."
+        }
+      ],
+      "partnership_milestones": [
+        {
+          "date": "2024-05-01",
+          "type": "Onboarding",
+          "description": "Greenfield signed after their previous LMS provider failed a CDSCO audit readiness check. Trellis was brought in with a 60-day go-live requirement. Met on day 54."
+        },
+        {
+          "date": "2024-09-15",
+          "type": "Milestone",
+          "description": "Greenfield became the first Trellis client to achieve 90%+ activation within the first 6 months of onboarding."
+        },
+        {
+          "date": "2024-11-01",
+          "type": "Product Influence",
+          "description": "Dr. Shah's feedback on audit trail export formats directly led to the PDF certificate with QR verification feature — shipped in January 2025."
+        },
+        {
+          "date": "2025-01-20",
+          "type": "Recognition",
+          "description": "CDSCO inspection passed with commendation on training documentation. Dr. Shah credited Trellis in a LinkedIn post that was shared 340 times in the pharmaceutical L&D community."
+        },
+        {
+          "date": "2025-05-01",
+          "type": "Renewal",
+          "description": "First renewal completed ahead of schedule, with 200 additional seats for a new Quality Assurance department."
+        }
+      ]
+    },
+    {
+      "id": "rishihood-university",
+      "name": "Rishihood University",
+      "type": "University",
+      "industry": "Higher Education",
+      "hq": "Sonipat",
+      "csm": "Karan Oberoi",
+      "health": "Churning — Renewal at Risk",
+      "tenure_years": 2,
+      "deal_value_inr": 960000,
+      "licensed_seats": 2400,
+      "current_milestone": {
+        "quarter": "JFM",
+        "label": "Retention Visit",
+        "report_status": "Not Started",
+        "visit_status": "Not Scheduled",
+        "visit_date": null
+      },
+      "nps": {
+        "score": 28,
+        "previous_score": 44,
+        "respondents": 19
+      },
+      "open_tickets": 9,
+      "usage": {
+        "active_users": 744,
+        "licensed_seats": 2400,
+        "activation_rate_pct": 31,
+        "prev_quarter_activation_pct": 39,
+        "avg_logins_per_user_per_month": 1.4,
+        "course_completion_rate_pct": 22,
+        "prev_quarter_completion_pct": 31,
+        "top_modules": [
+          "Critical Thinking Basics"
+        ],
+        "features_adopted": [
+          "Course Library"
+        ],
+        "features_not_adopted": [
+          "Assessments",
+          "Custom Branding",
+          "Manager Dashboard",
+          "Certificate Issuance",
+          "Mobile App",
+          "API Integration"
+        ],
+        "trend_narrative": "Usage is declining on every metric. Activation dropped from 39% to 31%, completion from 31% to 22%. Only one module — Critical Thinking Basics — sees consistent use, and that is because one faculty member has made it mandatory in her course. The platform is effectively unused by 69% of licensed users. No new courses have been created internally in the last two months."
+      },
+      "tickets": {
+        "total_this_quarter": 28,
+        "resolved": 19,
+        "open": 9,
+        "avg_resolution_hours": 42.8,
+        "sla_breach_count": 5,
+        "categories": {
+          "Bug": 11,
+          "How-To": 5,
+          "Feature Request": 0,
+          "Billing": 12
+        },
+        "recurring_issues": [
+          "Billing — university disputing the number of active seats billed vs actual usage",
+          "Login failures for students on mobile networks"
+        ],
+        "open_ticket_details": [
+          {
+            "id": "TKT-4091",
+            "summary": "Billing dispute — charged for 2400 seats, only 744 active",
+            "age_days": 48,
+            "severity": "High",
+            "status": "Finance escalation"
+          },
+          {
+            "id": "TKT-4143",
+            "summary": "Billing dispute — invoice format not compatible with university ERP",
+            "age_days": 41,
+            "severity": "Medium",
+            "status": "Finance review"
+          },
+          {
+            "id": "TKT-4212",
+            "summary": "Login failure for Jio network users on mobile",
+            "age_days": 32,
+            "severity": "High",
+            "status": "Network issue identified, awaiting fix"
+          },
+          {
+            "id": "TKT-4289",
+            "summary": "Student progress data exported incorrectly — wrong column mapping",
+            "age_days": 24,
+            "severity": "High",
+            "status": "Data team investigating"
+          },
+          {
+            "id": "TKT-4331",
+            "summary": "Course library not showing updated content",
+            "age_days": 19,
+            "severity": "Medium",
+            "status": "Cache clear workaround shared"
+          },
+          {
+            "id": "TKT-4377",
+            "summary": "Billing — second overdue reminder received, university contesting",
+            "age_days": 14,
+            "severity": "High",
+            "status": "Finance escalation"
+          },
+          {
+            "id": "TKT-4408",
+            "summary": "Admin account locked after password reset attempt",
+            "age_days": 10,
+            "severity": "High",
+            "status": "Account restored"
+          },
+          {
+            "id": "TKT-4441",
+            "summary": "Email notifications going to spam for all students",
+            "age_days": 7,
+            "severity": "Medium",
+            "status": "Email config fix in progress"
+          },
+          {
+            "id": "TKT-4469",
+            "summary": "Faculty dashboard showing zero completions despite activity",
+            "age_days": 3,
+            "severity": "High",
+            "status": "Investigating"
+          }
+        ],
+        "notable_positive": null
+      },
+      "nps_verbatims": [
+        {
+          "respondent": "Academic Director",
+          "score": 3,
+          "comment": "We are paying for 2,400 seats and barely 700 students are using it. The value proposition is not clear to us anymore. We were told adoption support would be provided but we have not seen it."
+        },
+        {
+          "respondent": "IT Coordinator",
+          "score": 2,
+          "comment": "Too many open tickets. Issues are taking weeks to resolve. We are comparing alternatives and one competitor has already done a free demo for us."
+        },
+        {
+          "respondent": "Faculty Member who uses Trellis",
+          "score": 7,
+          "comment": "I use it and I think it is a good platform. But most of my colleagues do not know how to use it and nobody has trained them properly."
+        },
+        {
+          "respondent": "Finance Officer",
+          "score": 3,
+          "comment": "We are being billed for users who are not using the platform. This needs to be resolved before we can consider renewal."
+        }
+      ],
+      "field_notes": [
+        {
+          "date": "2025-10-05",
+          "author": "Karan Oberoi",
+          "note": "Called Academic Director Dr. Prashant Nair. He was direct — they are evaluating alternatives. Named a competitor specifically. The billing dispute is the immediate flashpoint but the underlying issue is that Trellis was sold to them as an easy-to-adopt platform and adoption never happened. They feel undersupported."
+        },
+        {
+          "date": "2025-11-01",
+          "author": "Karan Oberoi",
+          "note": "Escalated to Trellis Account Director. Recommended a joint visit with the regional sales head. Also recommended a formal adoption rescue plan — identify 3 faculty champions, provide free 4-week intensive onboarding support, and resolve the billing dispute with a credit for the seat underutilisation. Awaiting internal approval."
+        },
+        {
+          "date": "2025-12-01",
+          "author": "Karan Oberoi",
+          "note": "Adoption rescue plan approved internally. Billing credit of 30% offered for this year. Dr. Nair agreed to hold off on the competitor evaluation until after a joint visit in January. This is a narrow window — the visit has to deliver something tangible."
+        }
+      ],
+      "partnership_milestones": [
+        {
+          "date": "2024-01-20",
+          "type": "Onboarding",
+          "description": "Rishihood signed as one of Trellis's first new-age university clients. The deal was anchored on the promise of blended learning and student engagement, not compliance — a different use case from typical university clients."
+        },
+        {
+          "date": "2024-06-01",
+          "type": "Risk Event",
+          "description": "Low adoption flagged at the 6-month mark. Karan proposed an adoption sprint — offer declined by the university at the time citing semester workload."
+        },
+        {
+          "date": "2025-01-15",
+          "type": "Renewal",
+          "description": "Year 1 renewal completed but with significant pushback on price. Renewed at a 15% discount. Warning signs present even at renewal."
+        },
+        {
+          "date": "2025-09-01",
+          "type": "Risk Event",
+          "description": "Billing dispute raised formally. University contesting active seat count vs. licensed seat billing. NPS declined from 44 to 28 in the same quarter."
+        }
+      ]
+    }
+  ]
+};
+
+const API_ENDPOINT = (window.location.hostname === 'localhost' || window.location.protocol === 'file:')
+  ? 'http://localhost:3131/v1/messages'
+  : '/api/claude';
+
+// ── STATE ──────────────────────────────────────────────────────────
+let currentAccount = null;
+let currentCSM = null;
+let generatedReport = null;
+
+const QUARTER_LABELS = {
+  JFM: 'Jan–Mar', AMJ: 'Apr–Jun', JAS: 'Jul–Sep', OND: 'Oct–Dec'
+};
+
+const HEALTH_COLOR = {
+  'Healthy — Growing':                    'green',
+  'Healthy — Stable':                     'green',
+  'High Growth — Upsell Ready':           'green',
+  'Strong Relationship — Collection Overdue': 'amber',
+  'New — Onboarding':                     'blue',
+  'At Risk — Low Adoption':               'amber',
+  'Recovering — Post-Crisis':             'amber',
+  'Churning — Renewal at Risk':           'red',
+};
+
+const MILESTONE_QUARTERS = ['JFM','AMJ','JAS','OND'];
+const MILESTONE_NAMES = {
+  JFM: 'Retention Visit', AMJ: 'Annual Planning',
+  JAS: 'Courtesy Visit', OND: 'Growth Conversation'
+};
+
+// Milestone track states
+const REPORT_STATES = ['Not Started','Draft','Finalized'];
+const VISIT_STATES  = ['Not Scheduled','Planned','Rescheduled','Completed','Feedback Received'];
+
+function milestonePillClass(status, track) {
+  const map = {
+    'Not Started':       'ms-not-started',
+    'Draft':             'ms-draft',
+    'Finalized':         'ms-finalized',
+    'Not Scheduled':     'ms-not-started',
+    'Planned':           'ms-planned',
+    'Rescheduled':       'ms-rescheduled',
+    'Completed':         'ms-completed',
+    'Feedback Received': 'ms-feedback',
+  };
+  return map[status] || 'ms-not-started';
+}
+
+// ── INIT ──────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  renderAccountGrid();
+});
+
+// ── SCREEN MANAGEMENT ─────────────────────────────────────────────
+function showScreen(n) {
+  ['screen1','screen2','screen3','screen4'].forEach(s => {
+    document.getElementById(s).classList.remove('active');
+  });
+  document.getElementById('screen' + n).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function goToScreen1() {
+  document.getElementById('breadcrumb').style.display = 'none';
+  document.getElementById('header-csm').classList.remove('visible');
+  showScreen(1);
+}
+
+function goToScreen2() {
+  showScreen(2);
+}
+
+// ── SCREEN 1: ACCOUNT GRID ────────────────────────────────────────
+function renderAccountGrid() {
+  const grid = document.getElementById('account-grid');
+  const sub  = document.getElementById('screen1-sub');
+
+  const csmName = TRELLIS_DATA.vendor.cs_team[0].name;
+  sub.textContent = TRELLIS_DATA.accounts.length + ' accounts · ' + csmName;
+
+  grid.innerHTML = TRELLIS_DATA.accounts.map(a => {
+    const hc = HEALTH_COLOR[a.health] || 'blue';
+    const npsClass = a.nps.score >= 60 ? 'nps-high' : a.nps.score >= 40 ? 'nps-mid' : 'nps-low';
+    const npsDelta = a.nps.previous_score
+      ? (a.nps.score - a.nps.previous_score > 0
+          ? '<span class="nps-delta up">▲' + (a.nps.score - a.nps.previous_score) + '</span>'
+          : '<span class="nps-delta down">▼' + Math.abs(a.nps.score - a.nps.previous_score) + '</span>')
+      : '<span class="nps-delta" style="color:var(--text-3)">First</span>';
+
+    const ticketWarn = a.open_tickets > 4
+      ? '<span class="ac-ticket-warn">⚠ ' + a.open_tickets + ' open</span>'
+      : '<span>' + a.open_tickets + ' open tickets</span>';
+
+    const tenure = a.tenure_years < 1
+      ? Math.round(a.tenure_years * 12) + ' mo'
+      : a.tenure_years + ' yr' + (a.tenure_years !== 1 ? 's' : '');
+
+    const dealVal = '₹' + (a.deal_value_inr / 100000).toFixed(1) + 'L';
+
+    return '<div class="account-card health-' + hc + '" onclick="selectAccount(\'' + a.id + '\')">' +
+      '<div class="ac-top">' +
+        '<div><div class="ac-name">' + escHtml(a.name) + '</div><div class="ac-type">' + escHtml(a.type) + ' · ' + escHtml(a.hq) + '</div></div>' +
+        '<div class="health-badge ' + hc + '">' + escHtml(a.health.split(' — ')[0]) + '</div>' +
+      '</div>' +
+      '<div class="ac-metrics">' +
+        '<div class="ac-metric"><span class="ac-metric-val"><span class="nps-val ' + npsClass + '">' + a.nps.score + '</span> ' + npsDelta + '</span><span class="ac-metric-label">NPS</span></div>' +
+        '<div class="ac-metric"><span class="ac-metric-val">' + escHtml(dealVal) + '</span><span class="ac-metric-label">Deal Value</span></div>' +
+        '<div class="ac-metric"><span class="ac-metric-val">' + escHtml(tenure) + '</span><span class="ac-metric-label">Tenure</span></div>' +
+      '</div>' +
+      '<div class="ac-footer">' +
+        '<span class="ac-quarter">' + a.current_milestone.quarter + ' — ' + escHtml(a.current_milestone.label) + '</span>' +
+        ticketWarn +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ── SCREEN 2: ACCOUNT DETAIL ──────────────────────────────────────
+function selectAccount(id) {
+  currentAccount = TRELLIS_DATA.accounts.find(a => a.id === id);
+  currentCSM = TRELLIS_DATA.vendor.cs_team.find(c => c.accounts.includes(id));
+  if (!currentAccount) return;
+
+  document.getElementById('breadcrumb').style.display = 'flex';
+  document.getElementById('breadcrumb-account').textContent = currentAccount.name;
+  const csmEl = document.getElementById('header-csm');
+  csmEl.textContent = currentCSM ? currentCSM.name : '';
+  csmEl.classList.add('visible');
+
+  renderHero();
+  renderMilestoneDashboard();
+  renderUsageSnapshot();
+  renderVerbatims();
+  renderGenerateArea();
+
+  showScreen(2);
+}
+
+function renderHero() {
+  const a = currentAccount;
+  const hc = HEALTH_COLOR[a.health] || 'blue';
+  const initials = a.name.split(' ').slice(0,2).map(w => w[0]).join('');
+  const dealVal = '₹' + (a.deal_value_inr / 100000).toFixed(1) + 'L';
+  const tenure = a.tenure_years < 1
+    ? Math.round(a.tenure_years * 12) + ' months'
+    : a.tenure_years + ' year' + (a.tenure_years !== 1 ? 's' : '');
+
+  document.getElementById('account-hero').innerHTML =
+    '<div class="hero-icon">' + escHtml(initials) + '</div>' +
+    '<div class="hero-main">' +
+      '<div><div class="hero-name">' + escHtml(a.name) + '</div>' +
+      '<div class="hero-meta">' +
+        '<span>' + escHtml(a.type) + '</span>' +
+        '<span>' + escHtml(a.industry) + '</span>' +
+        '<span>' + escHtml(a.hq) + '</span>' +
+        '<span class="health-badge ' + hc + '">' + escHtml(a.health) + '</span>' +
+      '</div></div>' +
+      '<div class="hero-metrics" style="margin-top:16px">' +
+        metric('NPS', a.nps.score, '') +
+        metric('Deal Value', dealVal, '') +
+        metric('Tenure', tenure, '') +
+        metric('Licensed Seats', a.licensed_seats.toLocaleString('en-IN'), '') +
+        metric('Open Tickets', a.open_tickets, a.open_tickets > 4 ? 'color:var(--red)' : '') +
+      '</div>' +
+    '</div>';
+}
+
+function metric(label, val, style) {
+  return '<div class="hero-metric"><div class="hero-metric-val"' + (style ? ' style="' + style + '"' : '') + '>' + escHtml(String(val)) + '</div><div class="hero-metric-label">' + escHtml(label) + '</div></div>';
+}
+
+function renderMilestoneDashboard() {
+  const a = currentAccount;
+  const cq = a.current_milestone.quarter;
+
+  // For demo: simulate completed milestones for earlier quarters
+  const qIndex = MILESTONE_QUARTERS.indexOf(cq);
+  const reportRow = document.getElementById('milestone-report-row');
+  const visitRow  = document.getElementById('milestone-visit-row');
+
+  reportRow.innerHTML = MILESTONE_QUARTERS.map((q, i) => {
+    const isCurrent = q === cq;
+    const isPast = i < qIndex;
+    const rs = isCurrent ? a.current_milestone.report_status : (isPast ? 'Finalized' : 'Not Started');
+    return '<div class="milestone-cell' + (isCurrent ? ' current' : '') + '">' +
+      (isCurrent ? '<span class="current-badge">Current</span>' : '') +
+      '<div class="milestone-qtr">' + q + ' · ' + QUARTER_LABELS[q] + '</div>' +
+      '<div class="milestone-name">' + MILESTONE_NAMES[q] + '</div>' +
+      '<span class="milestone-status-pill ' + milestonePillClass(rs) + '">' + escHtml(rs) + '</span>' +
+    '</div>';
+  }).join('');
+
+  visitRow.innerHTML = MILESTONE_QUARTERS.map((q, i) => {
+    const isCurrent = q === cq;
+    const isPast = i < qIndex;
+    const vs = isCurrent ? a.current_milestone.visit_status : (isPast ? 'Completed' : 'Not Scheduled');
+    const dateStr = isCurrent && a.current_milestone.visit_date ? ' · ' + a.current_milestone.visit_date : '';
+    return '<div class="milestone-cell' + (isCurrent ? ' current' : '') + '">' +
+      '<div class="milestone-qtr">' + q + ' · ' + QUARTER_LABELS[q] + '</div>' +
+      '<div class="milestone-name">' + MILESTONE_NAMES[q] + '</div>' +
+      '<span class="milestone-status-pill ' + milestonePillClass(vs) + '">' + escHtml(vs) + escHtml(dateStr) + '</span>' +
+    '</div>';
+  }).join('');
+}
+
+function renderUsageSnapshot() {
+  const u = currentAccount.usage;
+  const actDelta = u.activation_rate_pct - u.prev_quarter_activation_pct;
+  const compDelta = u.course_completion_rate_pct - u.prev_quarter_completion_pct;
+
+  document.getElementById('usage-grid').innerHTML =
+    usageStat('Activation Rate', u.activation_rate_pct + '%', actDelta) +
+    usageStat('Course Completion', u.course_completion_rate_pct + '%', compDelta) +
+    usageStat('Active Users', u.active_users.toLocaleString('en-IN') + ' / ' + u.licensed_seats.toLocaleString('en-IN'), 0, 'seats') +
+    usageStat('Avg Logins/User/Month', u.avg_logins_per_user_per_month, 0, '') +
+    usageStat('Features Adopted', u.features_adopted.length + ' of ' + (u.features_adopted.length + u.features_not_adopted.length), 0, '') +
+    usageStat('Top Module', u.top_modules[0], 0, '');
+
+  document.getElementById('usage-narrative').textContent = u.trend_narrative;
+}
+
+function usageStat(label, val, delta, suffix) {
+  const deltaHtml = (typeof delta === 'number' && delta !== 0)
+    ? '<div class="usage-stat-delta ' + (delta > 0 ? 'delta-up' : 'delta-down') + '">' +
+      (delta > 0 ? '▲' : '▼') + Math.abs(delta) + (suffix || '%') + ' vs last quarter</div>'
+    : '';
+  return '<div class="usage-stat"><div class="usage-stat-val">' + escHtml(String(val)) + '</div>' +
+    '<div class="usage-stat-label">' + escHtml(label) + '</div>' + deltaHtml + '</div>';
+}
+
+function renderVerbatims() {
+  const verbs = currentAccount.nps_verbatims.slice(0, 3);
+  document.getElementById('verbatim-list').innerHTML = verbs.map(v => {
+    const sc = v.score >= 8 ? 'vs-high' : v.score >= 6 ? 'vs-mid' : 'vs-low';
+    return '<div class="verbatim-item">' +
+      '<div class="verbatim-quote">"' + escHtml(v.comment) + '"</div>' +
+      '<div class="verbatim-attr">' +
+        '<span class="verbatim-name">' + escHtml(v.respondent) + '</span>' +
+        '<span class="verbatim-score ' + sc + '">NPS ' + v.score + '</span>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function renderGenerateArea() {
+  const a = currentAccount;
+  const m = a.current_milestone;
+  document.getElementById('generate-label').textContent =
+    'Generate ' + m.quarter + ' Engagement Report — ' + m.label;
+  document.getElementById('generate-sub').textContent =
+    'AI will synthesize usage, tickets, NPS, field notes, and partnership milestones into a narrative engagement report';
+}
+
+// ── SCREEN 3: GENERATION ──────────────────────────────────────────
+const GEN_STEPS = [
+  'Analysing 5 data sources',
+  'Building narrative plan',
+  'Synthesising account story',
+  'Writing report sections',
+  'Finalising report',
+];
+
+function setGenStep(activeIdx) {
+  const titleEl = document.getElementById('gen-title');
+  const progressEl = document.getElementById('gen-progress');
+  titleEl.textContent = GEN_STEPS[activeIdx] + '...';
+  progressEl.innerHTML = GEN_STEPS.map((s, i) => {
+    const cls = i < activeIdx ? 'done' : i === activeIdx ? 'active' : '';
+    return '<div class="gen-step-row ' + cls + '"><div class="gen-dot"></div><span>' + escHtml(s) + '</span></div>';
+  }).join('');
+}
+
+async function startGeneration() {
+  document.getElementById('error-box').classList.remove('visible');
+  showScreen(3);
+  setGenStep(0);
+
+  try {
+    // PASS 1 — Narrative Planner
+    setGenStep(1);
+    const plan = await runNarrativePlanner();
+
+    // PASS 2 — Section Writer
+    setGenStep(3);
+    const report = await runSectionWriter(plan);
+
+    setGenStep(4);
+    generatedReport = report;
+    generatedReport._plan = plan;
+
+    await new Promise(r => setTimeout(r, 600));
+    renderReport(report, plan);
+    showScreen(4);
+
+  } catch (e) {
+    console.error(e);
+    showScreen(2);
+    const eb = document.getElementById('error-box');
+    eb.textContent = 'Report generation failed: ' + (e.message || 'Unknown error. Please try again.');
+    eb.classList.add('visible');
+  }
+}
+
+// ── PASS 1: NARRATIVE PLANNER ────────────────────────────────────
+async function runNarrativePlanner() {
+  const a = currentAccount;
+  const systemPrompt = `You are a senior Customer Success strategist at Trellis, a B2B LMS company. You are preparing a narrative engagement report for a customer visit.
+
+Analyse all five data sources provided and return a NARRATIVE PLAN — the strategic synthesis that will drive the written report. This is NOT the report itself; it is the thinking behind it.
+
+MILESTONE CONTEXT:
+Quarter: ${a.current_milestone.quarter} (${QUARTER_LABELS[a.current_milestone.quarter]})
+Visit Type: ${a.current_milestone.label}
+JFM = Retention visit, renewal focus
+AMJ = Annual planning, collection
+JAS = Courtesy visit, relationship warmth
+OND = Growth conversation, expansion signals
+
+Return ONLY valid JSON, no markdown, in exactly this structure:
+{
+  "headline": "One sentence that captures the soul of this relationship right now — honest, specific, not generic",
+  "quarter_focus": "What this particular visit is really about given the milestone type and account state",
+  "tone": "one of: celebratory / warm / direct / honest / recovery / urgent",
+  "key_themes": ["theme1", "theme2", "theme3"],
+  "section_plans": {
+    "journey_so_far": "The angle to take — what part of the history matters most right now",
+    "where_you_are_today": "The key data story — what the numbers actually mean",
+    "moments_that_mattered": "Which 2-3 specific moments from milestones/verbatims to highlight and why",
+    "learned_from_you": "How this customer has shaped Trellis — be specific, not generic",
+    "friction": "What to name honestly — risks, frustrations, open issues",
+    "discussion_points": ["talking point 1", "talking point 2", "talking point 3", "talking point 4"],
+    "looking_ahead": "Forward look tone and specific signals to reference"
+  }
+}`;
+
+  const userMessage = 'Here is the full account data:\n\n' + JSON.stringify(a, null, 2);
+  const resp = await callClaude(systemPrompt, userMessage, 1200);
+  const raw = resp.replace(/```json|```/g, '').trim();
+  try {
+    return JSON.parse(raw);
+  } catch(e) {
+    console.error('Planner parse error:', raw);
+    throw new Error('Could not parse the narrative plan. Please try again.');
+  }
+}
+
+// ── PASS 2: SECTION WRITER ────────────────────────────────────────
+async function runSectionWriter(plan) {
+  const a = currentAccount;
+  const systemPrompt = `You are a senior writer at Trellis crafting a customer engagement report for ${a.name}. This is a narrative document — it tells the story of a business relationship, not a dashboard summary.
+
+WRITING RULES:
+- Write in a warm, professional, direct voice — like a trusted advisor, not a vendor
+- Numbers and data exist to back up a story, not to replace one
+- Each section should feel like it was written by someone who genuinely knows this account
+- No bullet points, no headers within sections — flowing prose only
+- Length per section: 100-200 words. Discussion points section: 4 numbered talking points, 1-2 sentences each
+- Be specific — reference actual module names, ticket numbers, verbatim quotes, milestone dates where relevant
+
+NARRATIVE PLAN:
+${JSON.stringify(plan, null, 2)}
+
+Return ONLY valid JSON, no markdown, with exactly these keys:
+{
+  "journey_so_far": "prose",
+  "where_you_are_today": "prose",
+  "moments_that_mattered": "prose",
+  "learned_from_you": "prose",
+  "friction": "prose",
+  "discussion_points": ["point 1 prose", "point 2 prose", "point 3 prose", "point 4 prose"],
+  "looking_ahead": "prose",
+  "featured_verbatim": {"text": "verbatim quote", "attribution": "name, role"},
+  "report_date": "${new Date().toLocaleDateString('en-IN', {day:'numeric',month:'long',year:'numeric'})}"
+}`;
+
+  const userMessage = 'Account data:\n\n' + JSON.stringify(a, null, 2);
+  const resp = await callClaude(systemPrompt, userMessage, 4000);
+  const raw = resp.replace(/```json|```/g, '').trim();
+  try {
+    return JSON.parse(raw);
+  } catch(e) {
+    console.error('Section writer parse error:', raw);
+    throw new Error('Could not parse the generated report sections. Please try again.');
+  }
+}
+
+// ── CLAUDE API CALLER ────────────────────────────────────────────
+async function callClaude(system, user, maxTokens) {
+  const resp = await Promise.race([
+    fetch(API_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-opus-4-5',
+        max_tokens: maxTokens,
+        system,
+        messages: [{ role: 'user', content: user }]
+      })
+    }),
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Request timed out after 90 seconds')), 90000))
+  ]);
+  const data = await resp.json();
+  if (data.error) throw new Error('API error: ' + data.error.message);
+  if (!data.content || !data.content[0] || !data.content[0].text) throw new Error('Empty response from API');
+  return data.content[0].text;
+}
+
+// ── SCREEN 4: RENDER REPORT ──────────────────────────────────────
+function renderReport(report, plan) {
+  const a = currentAccount;
+  const m = a.current_milestone;
+
+  document.getElementById('report-client-name').textContent = a.name;
+  const qbadge = document.getElementById('report-quarter-badge');
+  qbadge.className = 'milestone-chip';
+  qbadge.textContent = m.quarter + ' · ' + m.label;
+
+  const tenure = a.tenure_years < 1
+    ? Math.round(a.tenure_years * 12) + ' months'
+    : a.tenure_years + ' year' + (a.tenure_years !== 1 ? 's' : '');
+
+  const verbalAttr = report.featured_verbatim
+    ? `<div class="pullquote">
+        <div class="pullquote-text">"${escHtml(report.featured_verbatim.text)}"</div>
+        <div class="pullquote-attr">— ${escHtml(report.featured_verbatim.attribution)}</div>
+      </div>` : '';
+
+  const talkingPoints = (report.discussion_points || []).map((pt, i) =>
+    `<li class="talking-point"><span class="tp-num">${i + 1}</span><span class="tp-text">${escHtml(pt)}</span></li>`
+  ).join('');
+
+  const frictionText = report.friction || '';
+  const frictionHtml = frictionText.split('\n').filter(Boolean).length > 1
+    ? frictionText.split('\n').filter(Boolean).map(f => `<div class="friction-item">${escHtml(f)}</div>`).join('')
+    : `<div class="friction-item">${escHtml(frictionText)}</div>`;
+
+  document.getElementById('report-wrap').innerHTML = `
+    <div class="report-cover">
+      <div class="report-cover-eyebrow">Trellis Customer Engagement Report</div>
+      <div class="report-cover-client">${escHtml(a.name)}</div>
+      <div class="report-cover-title">${escHtml(m.quarter + ' ' + new Date().getFullYear())} · ${escHtml(m.label)}</div>
+      <div class="report-cover-meta">
+        <div class="cover-meta-item"><div class="cover-meta-label">Prepared for</div><div class="cover-meta-val">${escHtml(a.name)}</div></div>
+        <div class="cover-meta-item"><div class="cover-meta-label">Prepared by</div><div class="cover-meta-val">${escHtml(currentCSM ? currentCSM.name : 'Trellis CS Team')}</div></div>
+        <div class="cover-meta-item"><div class="cover-meta-label">Relationship Since</div><div class="cover-meta-val">${escHtml(tenure + ' together')}</div></div>
+        <div class="cover-meta-item"><div class="cover-meta-label">Report Date</div><div class="cover-meta-val">${escHtml(report.report_date || '')}</div></div>
+      </div>
+    </div>
+
+    <div class="report-body">
+
+      <div class="report-section">
+        <div class="section-eyebrow">The Journey So Far</div>
+        <div class="section-heading">How we got here, together</div>
+        <div class="section-body"><p>${escHtml(report.journey_so_far || '')}</p></div>
+      </div>
+
+      <div class="report-section">
+        <div class="section-eyebrow">Where You Are Today</div>
+        <div class="section-heading">A look at this quarter</div>
+        <div class="section-body"><p>${escHtml(report.where_you_are_today || '')}</p></div>
+        ${verbalAttr}
+      </div>
+
+      <div class="report-section">
+        <div class="section-eyebrow">Moments That Mattered</div>
+        <div class="section-heading">Highlights of our relationship</div>
+        <div class="section-body"><p>${escHtml(report.moments_that_mattered || '')}</p></div>
+      </div>
+
+      <div class="report-section">
+        <div class="section-eyebrow">What We Have Learned From You</div>
+        <div class="section-heading">How you have shaped Trellis</div>
+        <div class="section-body"><p>${escHtml(report.learned_from_you || '')}</p></div>
+      </div>
+
+      <div class="report-section">
+        <div class="section-eyebrow">Where We See Friction</div>
+        <div class="section-heading">What we want to be honest about</div>
+        <div class="section-body">${frictionHtml}</div>
+      </div>
+
+      <div class="report-section">
+        <div class="section-eyebrow">What We Would Love to Discuss</div>
+        <div class="section-heading">Talking points for today</div>
+        <ul class="talking-points">${talkingPoints}</ul>
+      </div>
+
+      <div class="report-section">
+        <div class="section-eyebrow">Looking Ahead, Together</div>
+        <div class="section-heading">Where we go from here</div>
+        <div class="section-body"><p>${escHtml(report.looking_ahead || '')}</p></div>
+      </div>
+
+    </div>
+
+    <div class="report-footer">
+      <span>Prepared with care by your Trellis Customer Success team</span>
+      <span class="footer-trellis">Trellis &mdash; Learning that sticks. Relationships that last.</span>
+    </div>
+  `;
+}
+
+// ── PDF DOWNLOAD ──────────────────────────────────────────────────
+function downloadReportPDF() {
+  const { jsPDF } = window.jspdf;
+  const a = currentAccount;
+  const report = generatedReport;
+  if (!report) return;
+
+  const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+  const W = 210, margin = 20, cw = W - margin * 2;
+  let y = margin;
+
+  function checkY(needed) {
+    if (y + needed > 285) { doc.addPage(); y = margin; }
+  }
+
+  // Cover
+  doc.setFillColor(27, 79, 114);
+  doc.rect(0, 0, W, 80, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(22);
+  doc.text(a.name, margin, 32);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(12);
+  doc.text(a.current_milestone.quarter + ' · ' + a.current_milestone.label + ' · Engagement Report', margin, 42);
+  doc.setFontSize(9); doc.setTextColor(180, 210, 230);
+  doc.text('Prepared by Trellis Customer Success  ·  ' + (report.report_date || ''), margin, 52);
+  doc.setTextColor(0); y = 92;
+
+  const sections = [
+    { eye: 'The Journey So Far', head: 'How we got here, together', body: report.journey_so_far },
+    { eye: 'Where You Are Today', head: 'A look at this quarter', body: report.where_you_are_today },
+    { eye: 'Moments That Mattered', head: 'Highlights of our relationship', body: report.moments_that_mattered },
+    { eye: 'What We Have Learned From You', head: 'How you have shaped Trellis', body: report.learned_from_you },
+    { eye: 'Where We See Friction', head: 'What we want to be honest about', body: report.friction },
+    { eye: 'Looking Ahead, Together', head: 'Where we go from here', body: report.looking_ahead },
+  ];
+
+  sections.forEach(s => {
+    checkY(40);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(46, 134, 193);
+    doc.text(s.eye.toUpperCase(), margin, y); y += 6;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(26, 43, 60);
+    const headLines = doc.splitTextToSize(s.head, cw);
+    doc.text(headLines, margin, y); y += headLines.length * 6 + 4;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(74, 85, 104);
+    const bodyLines = doc.splitTextToSize(s.body || '', cw);
+    bodyLines.forEach(line => {
+      checkY(7);
+      doc.text(line, margin, y); y += 6;
+    });
+    y += 6;
+    doc.setDrawColor(220); doc.setLineWidth(0.2);
+    doc.line(margin, y, W - margin, y); y += 8;
+  });
+
+  // Talking points
+  checkY(30);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(46, 134, 193);
+  doc.text('WHAT WE WOULD LOVE TO DISCUSS', margin, y); y += 6;
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(26, 43, 60);
+  doc.text('Talking points for today', margin, y); y += 8;
+  (report.discussion_points || []).forEach((pt, i) => {
+    checkY(14);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(27, 79, 114);
+    doc.text((i + 1) + '.', margin, y);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(74, 85, 104);
+    const ptLines = doc.splitTextToSize(pt, cw - 8);
+    ptLines.forEach(line => { checkY(7); doc.text(line, margin + 8, y); y += 6; });
+    y += 3;
+  });
+
+  // Footer on every page
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let p = 1; p <= pageCount; p++) {
+    doc.setPage(p);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(150);
+    doc.text('Trellis · Learning that sticks. Relationships that last.', margin, 290);
+    doc.text('Page ' + p + ' of ' + pageCount, W - margin, 290, { align: 'right' });
+  }
+
+  const fname = a.name.replace(/[^a-z0-9]/gi, '_') + '_Engagement_Report_' + a.current_milestone.quarter + '.pdf';
+  doc.save(fname);
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+</script>
+</body>
+</html>
