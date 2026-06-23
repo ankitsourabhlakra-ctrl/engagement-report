@@ -2668,7 +2668,7 @@ function downloadReportPDF() {
 
   // NPS block (left)
   doc.setFont('helvetica', 'bold'); doc.setFontSize(28);
-  doc.setTextColor(...npsColor);
+  doc.setTextColor(npsColor[0], npsColor[1], npsColor[2]);
   doc.text(String(a.nps.score), margin + 16, y + 22, { align: 'center' });
   doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(138,155,176);
   doc.text('NPS SCORE', margin + 16, y + 29, { align: 'center' });
@@ -2686,7 +2686,7 @@ function downloadReportPDF() {
   // Activation rate block
   const colW = (contentWidth - 38) / 3;
   const col1x = margin + 38;
-  doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.setTextColor(...actColor);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.setTextColor(actColor[0], actColor[1], actColor[2]);
   doc.text(u.activation_rate_pct + '%', col1x + colW/2, y + 22, { align: 'center' });
   doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(138,155,176);
   doc.text('ACTIVATION RATE', col1x + colW/2, y + 29, { align: 'center' });
@@ -2695,11 +2695,11 @@ function downloadReportPDF() {
   doc.text((actDelta >= 0 ? '▲' : '▼') + Math.abs(actDelta) + '% vs last quarter', col1x + colW/2, y + 36, { align: 'center' });
   // Progress bar
   doc.setFillColor(220,228,236); doc.roundedRect(col1x + 4, y + 42, colW - 8, 4, 1, 1, 'F');
-  doc.setFillColor(...actColor); doc.roundedRect(col1x + 4, y + 42, (colW - 8) * u.activation_rate_pct / 100, 4, 1, 1, 'F');
+  doc.setFillColor(actColor[0], actColor[1], actColor[2]); doc.roundedRect(col1x + 4, y + 42, (colW - 8) * u.activation_rate_pct / 100, 4, 1, 1, 'F');
 
   // Completion rate block
   const col2x = col1x + colW;
-  doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.setTextColor(...compColor);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.setTextColor(compColor[0], compColor[1], compColor[2]);
   doc.text(u.course_completion_rate_pct + '%', col2x + colW/2, y + 22, { align: 'center' });
   doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(138,155,176);
   doc.text('COMPLETION RATE', col2x + colW/2, y + 29, { align: 'center' });
@@ -2707,7 +2707,7 @@ function downloadReportPDF() {
   doc.setTextColor(compDelta >= 0 ? 26 : 176, compDelta >= 0 ? 122 : 58, compDelta >= 0 ? 74 : 46);
   doc.text((compDelta >= 0 ? '▲' : '▼') + Math.abs(compDelta) + '% vs last quarter', col2x + colW/2, y + 36, { align: 'center' });
   doc.setFillColor(220,228,236); doc.roundedRect(col2x + 4, y + 42, colW - 8, 4, 1, 1, 'F');
-  doc.setFillColor(...compColor); doc.roundedRect(col2x + 4, y + 42, (colW - 8) * u.course_completion_rate_pct / 100, 4, 1, 1, 'F');
+  doc.setFillColor(compColor[0], compColor[1], compColor[2]); doc.roundedRect(col2x + 4, y + 42, (colW - 8) * u.course_completion_rate_pct / 100, 4, 1, 1, 'F');
 
   // Active seats block
   const col3x = col2x + colW;
