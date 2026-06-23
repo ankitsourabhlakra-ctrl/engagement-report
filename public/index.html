@@ -258,6 +258,107 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); font
   .generate-area { flex-direction: column; text-align: center; }
   .cover-meta-item { min-width: calc(50% - 14px); }
 }
+
+/* ── MILESTONE CREATE BUTTON ── */
+.milestone-create-btn { display: block; width: 100%; margin-top: 10px; background: var(--trellis); color: white; border: none; border-radius: 6px; padding: 8px 10px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: var(--sans); transition: background 0.15s; }
+.milestone-create-btn:hover { background: var(--trellis-dk); }
+
+/* ── REPORT SNAPSHOT PANEL ── */
+.report-snapshot-panel { display: grid; grid-template-columns: 180px 1fr 1fr; gap: 1px; background: var(--border); border-bottom: 1px solid var(--border); }
+.snapshot-nps { background: var(--white); padding: 24px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; }
+.nps-gauge-svg { width: 130px; height: 100px; }
+.snapshot-nps-label { font-size: 10px; color: var(--text-3); font-family: var(--mono); text-align: center; }
+.snapshot-usage { background: var(--white); padding: 20px 24px; }
+.snapshot-tickets { background: var(--white); padding: 20px 24px; }
+.snapshot-usage-heading { font-size: 10px; font-weight: 700; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--mono); margin-bottom: 8px; }
+
+/* PROGRESS BARS */
+.prog-bar-wrap { margin-bottom: 6px; }
+.prog-bar-track { height: 10px; background: var(--bg); border-radius: 5px; overflow: hidden; }
+.prog-bar-fill { height: 100%; border-radius: 5px; transition: width 0.6s ease; }
+.prog-bar-meta { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+.prog-bar-val { font-size: 16px; font-weight: 700; color: var(--text); }
+.bar-delta { font-size: 10px; font-family: var(--mono); }
+.seats-active { font-size: 18px; font-weight: 700; color: var(--trellis); }
+.seats-sep, .seats-total { font-size: 14px; color: var(--text-3); }
+.seats-label { font-size: 11px; color: var(--text-3); font-family: var(--mono); }
+.snapshot-seats { margin-top: 14px; }
+
+/* TICKET PANEL */
+.ticket-panel {}
+.ticket-summary-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-bottom: 14px; }
+.ticket-summary-stat { text-align: center; }
+.tss-val { font-size: 20px; font-weight: 700; color: var(--text); }
+.tss-label { font-size: 9px; font-family: var(--mono); color: var(--text-3); text-transform: uppercase; }
+.ticket-bars { display: flex; flex-direction: column; gap: 6px; }
+.ticket-row { display: flex; align-items: center; gap: 8px; font-size: 11px; }
+.ticket-label { width: 100px; color: var(--text-2); flex-shrink: 0; }
+.ticket-bar-track { flex: 1; height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+.ticket-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
+.ticket-count { width: 20px; text-align: right; color: var(--text-3); font-family: var(--mono); font-size: 10px; }
+
+/* FEATURE PILLS */
+.feature-section { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+.feature-section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-3); font-family: var(--mono); margin-bottom: 8px; }
+.feature-pills-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+.feature-pill { font-size: 11px; padding: 4px 10px; border-radius: 12px; font-family: var(--mono); font-weight: 500; }
+.feature-pill.adopted { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-bd); }
+.feature-pill.not-adopted { background: var(--bg); color: var(--text-3); border: 1px solid var(--border); text-decoration: line-through; }
+
+/* MILESTONE TIMELINE */
+.milestone-timeline { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 0; }
+.mt-item { display: flex; gap: 14px; padding-bottom: 18px; position: relative; }
+.mt-item::before { content: ''; position: absolute; left: 8px; top: 18px; bottom: 0; width: 1px; background: var(--border); }
+.mt-item:last-child::before { display: none; }
+.mt-dot { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; margin-top: 2px; background: var(--trellis-lt); border: 2px solid var(--trellis); }
+.mt-dot.mt-dot-renewal     { background: var(--green-bg); border-color: var(--green); }
+.mt-dot.mt-dot-onboarding  { background: var(--blue-bg);  border-color: var(--blue); }
+.mt-dot.mt-dot-recognition { background: var(--gold-lt);  border-color: var(--gold); }
+.mt-dot.mt-dot-risk-event  { background: var(--red-bg);   border-color: var(--red); }
+.mt-dot.mt-dot-recovery    { background: var(--green-bg); border-color: var(--green); }
+.mt-dot.mt-dot-milestone   { background: var(--trellis-lt); border-color: var(--trellis); }
+.mt-dot.mt-dot-co-creation { background: #F3E8FF; border-color: #7E22CE; }
+.mt-dot.mt-dot-product-influence { background: var(--amber-bg); border-color: var(--amber); }
+.mt-content { flex: 1; }
+.mt-date { font-size: 10px; font-family: var(--mono); color: var(--text-3); }
+.mt-type { font-size: 11px; font-weight: 700; color: var(--trellis); margin: 2px 0 3px; }
+.mt-desc { font-size: 12px; color: var(--text-2); line-height: 1.5; }
+
+/* FRICTION ALERTS */
+.friction-alert { display: flex; align-items: flex-start; gap: 10px; background: var(--red-bg); border: 1px solid var(--red-bd); border-radius: 6px; padding: 12px 14px; margin-bottom: 8px; font-size: 13px; color: var(--text-2); line-height: 1.6; }
+.friction-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+.friction-alert:last-child { margin-bottom: 0; }
+
+/* TALKING POINT CARDS */
+.tp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 4px; }
+.tp-card { background: var(--trellis-lt); border: 1px solid rgba(46,134,193,0.25); border-radius: 8px; padding: 16px; display: flex; gap: 12px; align-items: flex-start; }
+.tp-card-num { width: 28px; height: 28px; border-radius: 50%; background: var(--trellis); color: white; font-size: 13px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.tp-card-text { font-size: 13px; color: var(--text-2); line-height: 1.65; }
+
+/* SECTION EDIT ── */
+.section-header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.section-header-row > div:first-child { flex: 1; }
+.section-header-row .section-eyebrow { margin-bottom: 8px; }
+.section-header-row .section-heading { margin-bottom: 0; }
+.section-edit-btn { background: transparent; border: 1px solid var(--border); border-radius: 6px; padding: 6px 10px; cursor: pointer; font-size: 13px; color: var(--text-3); flex-shrink: 0; margin-top: 4px; transition: all 0.15s; }
+.section-edit-btn:hover { border-color: var(--trellis); color: var(--trellis); background: var(--trellis-lt); }
+.section-textarea { width: 100%; min-height: 120px; border: 1px solid var(--border-2); border-radius: 6px; padding: 12px; font-family: var(--sans); font-size: 13px; color: var(--text-2); line-height: 1.7; resize: vertical; margin-bottom: 10px; }
+.section-textarea:focus { outline: none; border-color: var(--trellis); }
+.edit-actions-row { display: flex; gap: 8px; }
+.edit-save-btn { background: var(--trellis); color: white; border: none; border-radius: 6px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--sans); }
+.edit-cancel-btn { background: white; color: var(--text-2); border: 1px solid var(--border); border-radius: 6px; padding: 8px 16px; font-size: 12px; cursor: pointer; font-family: var(--sans); }
+.edit-regen-btn { background: var(--gold-lt); color: var(--gold); border: 1px solid var(--gold); border-radius: 6px; padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: var(--sans); margin-left: auto; }
+.edit-regen-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* REPORT SECTION: remove old margin-bottom on heading since header-row handles it */
+.report-section .section-eyebrow { margin-bottom: 0; }
+.report-section .section-heading  { margin-bottom: 0; }
+
+@media (max-width: 768px) {
+  .report-snapshot-panel { grid-template-columns: 1fr; }
+  .tp-grid { grid-template-columns: 1fr; }
+  .ticket-summary-row { grid-template-columns: repeat(2,1fr); }
+}
 </style>
 </head>
 <body>
@@ -1890,8 +1991,6 @@ function metric(label, val, style) {
 function renderMilestoneDashboard() {
   const a = currentAccount;
   const cq = a.current_milestone.quarter;
-
-  // For demo: simulate completed milestones for earlier quarters
   const qIndex = MILESTONE_QUARTERS.indexOf(cq);
   const reportRow = document.getElementById('milestone-report-row');
   const visitRow  = document.getElementById('milestone-visit-row');
@@ -1900,11 +1999,13 @@ function renderMilestoneDashboard() {
     const isCurrent = q === cq;
     const isPast = i < qIndex;
     const rs = isCurrent ? a.current_milestone.report_status : (isPast ? 'Finalized' : 'Not Started');
+    const createBtn = isCurrent ? '<button class="milestone-create-btn" onclick="startGeneration()">+ Create Draft Report</button>' : '';
     return '<div class="milestone-cell' + (isCurrent ? ' current' : '') + '">' +
       (isCurrent ? '<span class="current-badge">Current</span>' : '') +
       '<div class="milestone-qtr">' + q + ' · ' + QUARTER_LABELS[q] + '</div>' +
       '<div class="milestone-name">' + MILESTONE_NAMES[q] + '</div>' +
       '<span class="milestone-status-pill ' + milestonePillClass(rs) + '">' + escHtml(rs) + '</span>' +
+      createBtn +
     '</div>';
   }).join('');
 
@@ -1920,7 +2021,6 @@ function renderMilestoneDashboard() {
     '</div>';
   }).join('');
 }
-
 function renderUsageSnapshot() {
   const u = currentAccount.usage;
   const actDelta = u.activation_rate_pct - u.prev_quarter_activation_pct;
@@ -2124,9 +2224,108 @@ async function callClaude(system, user, maxTokens) {
 }
 
 // ── SCREEN 4: RENDER REPORT ──────────────────────────────────────
+function npsColor(score) {
+  return score >= 60 ? 'var(--green)' : score >= 40 ? 'var(--amber)' : 'var(--red)';
+}
+
+function npsGaugeSVG(score, prevScore) {
+  const pct = Math.max(0, Math.min(100, score)) / 100;
+  const r = 38, cx = 50, cy = 50;
+  const circ = Math.PI * r; // semicircle length
+  const filled = pct * circ;
+  const color = npsColor(score);
+  const delta = prevScore !== null ? (score - prevScore) : null;
+  const deltaHtml = delta !== null
+    ? `<text x="50" y="72" text-anchor="middle" font-size="9" fill="${delta >= 0 ? '#1A7A4A' : '#B03A2E'}" font-family="monospace">${delta >= 0 ? '▲' : '▼'}${Math.abs(delta)} vs prev</text>`
+    : `<text x="50" y="72" text-anchor="middle" font-size="9" fill="#8A9BB0" font-family="monospace">First score</text>`;
+  return `<svg viewBox="0 0 100 80" class="nps-gauge-svg">
+    <path d="M${cx-r},${cy} A${r},${r} 0 0,1 ${cx+r},${cy}" fill="none" stroke="#DDE3EB" stroke-width="9" stroke-linecap="round"/>
+    <path d="M${cx-r},${cy} A${r},${r} 0 0,1 ${cx+r},${cy}" fill="none" stroke="${color}" stroke-width="9" stroke-linecap="round"
+      stroke-dasharray="${filled.toFixed(1)} ${circ.toFixed(1)}" transform="rotate(180 ${cx} ${cy})"/>
+    <text x="${cx}" y="${cy+4}" text-anchor="middle" font-size="22" font-weight="700" fill="${color}" font-family="sans-serif">${score}</text>
+    <text x="${cx}" y="${cy+16}" text-anchor="middle" font-size="8" fill="#8A9BB0" font-family="monospace">NPS SCORE</text>
+    ${deltaHtml}
+  </svg>`;
+}
+
+function progressBar(pct, color, prevPct) {
+  const delta = prevPct !== undefined ? pct - prevPct : null;
+  const deltaStr = delta !== null
+    ? `<span class="bar-delta ${delta >= 0 ? 'delta-up' : 'delta-down'}">${delta >= 0 ? '▲' : '▼'}${Math.abs(delta)}% vs last quarter</span>`
+    : '';
+  return `<div class="prog-bar-wrap">
+    <div class="prog-bar-track"><div class="prog-bar-fill" style="width:${pct}%;background:${color}"></div></div>
+    <div class="prog-bar-meta"><span class="prog-bar-val">${pct}%</span>${deltaStr}</div>
+  </div>`;
+}
+
+function featurePills(adopted, notAdopted) {
+  const ad = adopted.map(f => `<span class="feature-pill adopted">${escHtml(f)}</span>`).join('');
+  const na = notAdopted.map(f => `<span class="feature-pill not-adopted">${escHtml(f)}</span>`).join('');
+  return `<div class="feature-pills-wrap">${ad}${na}</div>`;
+}
+
+function ticketMini(tickets) {
+  const cats = tickets.categories;
+  const total = Object.values(cats).reduce((a,b) => a + b, 0);
+  const colors = { Bug: '#B03A2E', 'How-To': '#1A5276', 'Feature Request': '#1A7A4A', Billing: '#B7600A' };
+  const bars = Object.entries(cats).map(([k,v]) => {
+    const w = total > 0 ? Math.round((v / total) * 100) : 0;
+    return `<div class="ticket-row">
+      <div class="ticket-label">${escHtml(k)}</div>
+      <div class="ticket-bar-track"><div class="ticket-bar-fill" style="width:${w}%;background:${colors[k] || '#888'}"></div></div>
+      <div class="ticket-count">${v}</div>
+    </div>`;
+  }).join('');
+  const open = tickets.open;
+  const sla = tickets.sla_breach_count;
+  return `<div class="ticket-panel">
+    <div class="ticket-summary-row">
+      <div class="ticket-summary-stat"><div class="tss-val">${tickets.total_this_quarter}</div><div class="tss-label">Total</div></div>
+      <div class="ticket-summary-stat"><div class="tss-val" style="color:var(--green)">${tickets.resolved}</div><div class="tss-label">Resolved</div></div>
+      <div class="ticket-summary-stat"><div class="tss-val" style="color:${open > 3 ? 'var(--red)' : 'var(--amber)' }">${open}</div><div class="tss-label">Open</div></div>
+      <div class="ticket-summary-stat"><div class="tss-val" style="color:${sla > 0 ? 'var(--red)' : 'var(--green)'}">${sla}</div><div class="tss-label">SLA Breaches</div></div>
+    </div>
+    <div class="ticket-bars">${bars}</div>
+  </div>`;
+}
+
+function frictionBox(text) {
+  const sentences = text.split(/(?<=[.!?])\s+/).filter(s => s.trim().length > 10);
+  return sentences.map(s =>
+    `<div class="friction-alert"><span class="friction-icon">⚠</span><span>${escHtml(s.trim())}</span></div>`
+  ).join('');
+}
+
+function tpCard(pt, i) {
+  return `<div class="tp-card">
+    <div class="tp-card-num">${i + 1}</div>
+    <div class="tp-card-text">${escHtml(pt)}</div>
+  </div>`;
+}
+
+function milestoneTimeline(milestones) {
+  const recent = milestones.slice(-4);
+  return `<div class="milestone-timeline">${recent.map(m =>
+    `<div class="mt-item">
+      <div class="mt-dot mt-dot-${m.type.toLowerCase().replace(/[^a-z]/g,'-')}"></div>
+      <div class="mt-content">
+        <div class="mt-date">${escHtml(m.date)}</div>
+        <div class="mt-type">${escHtml(m.type)}</div>
+        <div class="mt-desc">${escHtml(m.description)}</div>
+      </div>
+    </div>`
+  ).join('')}</div>`;
+}
+
+function sectionEditBtn(sectionKey) {
+  return `<button class="section-edit-btn" onclick="toggleEdit('${sectionKey}')" title="Edit this section">✏️</button>`;
+}
+
 function renderReport(report, plan) {
   const a = currentAccount;
   const m = a.current_milestone;
+  const u = a.usage;
 
   document.getElementById('report-client-name').textContent = a.name;
   const qbadge = document.getElementById('report-quarter-badge');
@@ -2137,87 +2336,271 @@ function renderReport(report, plan) {
     ? Math.round(a.tenure_years * 12) + ' months'
     : a.tenure_years + ' year' + (a.tenure_years !== 1 ? 's' : '');
 
-  const verbalAttr = report.featured_verbatim
-    ? `<div class="pullquote">
-        <div class="pullquote-text">"${escHtml(report.featured_verbatim.text)}"</div>
-        <div class="pullquote-attr">— ${escHtml(report.featured_verbatim.attribution)}</div>
-      </div>` : '';
-
-  const talkingPoints = (report.discussion_points || []).map((pt, i) =>
-    `<li class="talking-point"><span class="tp-num">${i + 1}</span><span class="tp-text">${escHtml(pt)}</span></li>`
-  ).join('');
-
-  const frictionText = report.friction || '';
-  const frictionHtml = frictionText.split('\n').filter(Boolean).length > 1
-    ? frictionText.split('\n').filter(Boolean).map(f => `<div class="friction-item">${escHtml(f)}</div>`).join('')
-    : `<div class="friction-item">${escHtml(frictionText)}</div>`;
+  const actColor  = u.activation_rate_pct >= 70  ? 'var(--green)' : u.activation_rate_pct >= 50 ? 'var(--amber)' : 'var(--red)';
+  const compColor = u.course_completion_rate_pct >= 70 ? 'var(--green)' : u.course_completion_rate_pct >= 50 ? 'var(--amber)' : 'var(--red)';
 
   document.getElementById('report-wrap').innerHTML = `
+    <!-- COVER -->
     <div class="report-cover">
       <div class="report-cover-eyebrow">Trellis Customer Engagement Report</div>
       <div class="report-cover-client">${escHtml(a.name)}</div>
-      <div class="report-cover-title">${escHtml(m.quarter + ' ' + new Date().getFullYear())} · ${escHtml(m.label)}</div>
+      <div class="report-cover-title">${escHtml(m.quarter)} · ${escHtml(m.label)}</div>
       <div class="report-cover-meta">
-        <div class="cover-meta-item"><div class="cover-meta-label">Prepared for</div><div class="cover-meta-val">${escHtml(a.name)}</div></div>
-        <div class="cover-meta-item"><div class="cover-meta-label">Prepared by</div><div class="cover-meta-val">${escHtml(currentCSM ? currentCSM.name : 'Trellis CS Team')}</div></div>
         <div class="cover-meta-item"><div class="cover-meta-label">Relationship Since</div><div class="cover-meta-val">${escHtml(tenure + ' together')}</div></div>
+        <div class="cover-meta-item"><div class="cover-meta-label">Prepared by</div><div class="cover-meta-val">${escHtml(currentCSM ? currentCSM.name : 'Trellis CS')}</div></div>
         <div class="cover-meta-item"><div class="cover-meta-label">Report Date</div><div class="cover-meta-val">${escHtml(report.report_date || '')}</div></div>
+        <div class="cover-meta-item"><div class="cover-meta-label">Deal Value</div><div class="cover-meta-val">₹${(a.deal_value_inr/100000).toFixed(1)}L</div></div>
+      </div>
+    </div>
+
+    <!-- HEALTH SNAPSHOT PANEL -->
+    <div class="report-snapshot-panel">
+      <div class="snapshot-nps">
+        ${npsGaugeSVG(a.nps.score, a.nps.previous_score)}
+        <div class="snapshot-nps-label">${a.nps.respondents} respondents this quarter</div>
+      </div>
+      <div class="snapshot-usage">
+        <div class="snapshot-usage-heading">Activation Rate</div>
+        ${progressBar(u.activation_rate_pct, actColor, u.prev_quarter_activation_pct)}
+        <div class="snapshot-usage-heading" style="margin-top:14px">Course Completion</div>
+        ${progressBar(u.course_completion_rate_pct, compColor, u.prev_quarter_completion_pct)}
+        <div class="snapshot-seats">
+          <span class="seats-active">${u.active_users.toLocaleString('en-IN')}</span>
+          <span class="seats-sep"> / </span>
+          <span class="seats-total">${u.licensed_seats.toLocaleString('en-IN')}</span>
+          <span class="seats-label"> active seats</span>
+        </div>
+      </div>
+      <div class="snapshot-tickets">
+        <div class="snapshot-usage-heading">Support This Quarter</div>
+        ${ticketMini(a.tickets)}
       </div>
     </div>
 
     <div class="report-body">
 
-      <div class="report-section">
-        <div class="section-eyebrow">The Journey So Far</div>
-        <div class="section-heading">How we got here, together</div>
-        <div class="section-body"><p>${escHtml(report.journey_so_far || '')}</p></div>
+      <!-- 1. JOURNEY SO FAR -->
+      <div class="report-section" data-key="journey_so_far">
+        <div class="section-header-row">
+          <div><div class="section-eyebrow">The Journey So Far</div>
+          <div class="section-heading">How we got here, together</div></div>
+          ${sectionEditBtn('journey_so_far')}
+        </div>
+        <div class="section-body" id="body-journey_so_far"><p>${escHtml(report.journey_so_far || '')}</p></div>
+        <div class="section-edit-area" id="edit-journey_so_far" style="display:none">
+          <textarea class="section-textarea" id="textarea-journey_so_far">${escHtml(report.journey_so_far || '')}</textarea>
+          <div class="edit-actions-row">
+            <button class="edit-save-btn" onclick="saveEdit('journey_so_far')">Save</button>
+            <button class="edit-cancel-btn" onclick="cancelEdit('journey_so_far')">Cancel</button>
+            <button class="edit-regen-btn" onclick="regenSection('journey_so_far')">↺ Regenerate</button>
+          </div>
+        </div>
       </div>
 
-      <div class="report-section">
-        <div class="section-eyebrow">Where You Are Today</div>
-        <div class="section-heading">A look at this quarter</div>
-        <div class="section-body"><p>${escHtml(report.where_you_are_today || '')}</p></div>
-        ${verbalAttr}
+      <!-- 2. WHERE YOU ARE TODAY -->
+      <div class="report-section" data-key="where_you_are_today">
+        <div class="section-header-row">
+          <div><div class="section-eyebrow">Where You Are Today</div>
+          <div class="section-heading">A look at this quarter</div></div>
+          ${sectionEditBtn('where_you_are_today')}
+        </div>
+        <div class="section-body" id="body-where_you_are_today"><p>${escHtml(report.where_you_are_today || '')}</p></div>
+        <div class="section-edit-area" id="edit-where_you_are_today" style="display:none">
+          <textarea class="section-textarea" id="textarea-where_you_are_today">${escHtml(report.where_you_are_today || '')}</textarea>
+          <div class="edit-actions-row">
+            <button class="edit-save-btn" onclick="saveEdit('where_you_are_today')">Save</button>
+            <button class="edit-cancel-btn" onclick="cancelEdit('where_you_are_today')">Cancel</button>
+            <button class="edit-regen-btn" onclick="regenSection('where_you_are_today')">↺ Regenerate</button>
+          </div>
+        </div>
+        <div class="feature-section">
+          <div class="feature-section-label">Feature Adoption</div>
+          ${featurePills(u.features_adopted, u.features_not_adopted)}
+        </div>
+        ${report.featured_verbatim ? `<div class="pullquote">
+          <div class="pullquote-text">"${escHtml(report.featured_verbatim.text)}"</div>
+          <div class="pullquote-attr">— ${escHtml(report.featured_verbatim.attribution)}</div>
+        </div>` : ''}
       </div>
 
-      <div class="report-section">
-        <div class="section-eyebrow">Moments That Mattered</div>
-        <div class="section-heading">Highlights of our relationship</div>
-        <div class="section-body"><p>${escHtml(report.moments_that_mattered || '')}</p></div>
+      <!-- 3. MOMENTS THAT MATTERED -->
+      <div class="report-section" data-key="moments_that_mattered">
+        <div class="section-header-row">
+          <div><div class="section-eyebrow">Moments That Mattered</div>
+          <div class="section-heading">Highlights of our relationship</div></div>
+          ${sectionEditBtn('moments_that_mattered')}
+        </div>
+        <div class="section-body" id="body-moments_that_mattered"><p>${escHtml(report.moments_that_mattered || '')}</p></div>
+        <div class="section-edit-area" id="edit-moments_that_mattered" style="display:none">
+          <textarea class="section-textarea" id="textarea-moments_that_mattered">${escHtml(report.moments_that_mattered || '')}</textarea>
+          <div class="edit-actions-row">
+            <button class="edit-save-btn" onclick="saveEdit('moments_that_mattered')">Save</button>
+            <button class="edit-cancel-btn" onclick="cancelEdit('moments_that_mattered')">Cancel</button>
+            <button class="edit-regen-btn" onclick="regenSection('moments_that_mattered')">↺ Regenerate</button>
+          </div>
+        </div>
+        ${milestoneTimeline(a.partnership_milestones)}
       </div>
 
-      <div class="report-section">
-        <div class="section-eyebrow">What We Have Learned From You</div>
-        <div class="section-heading">How you have shaped Trellis</div>
-        <div class="section-body"><p>${escHtml(report.learned_from_you || '')}</p></div>
+      <!-- 4. LEARNED FROM YOU -->
+      <div class="report-section" data-key="learned_from_you">
+        <div class="section-header-row">
+          <div><div class="section-eyebrow">What We Have Learned From You</div>
+          <div class="section-heading">How you have shaped Trellis</div></div>
+          ${sectionEditBtn('learned_from_you')}
+        </div>
+        <div class="section-body" id="body-learned_from_you"><p>${escHtml(report.learned_from_you || '')}</p></div>
+        <div class="section-edit-area" id="edit-learned_from_you" style="display:none">
+          <textarea class="section-textarea" id="textarea-learned_from_you">${escHtml(report.learned_from_you || '')}</textarea>
+          <div class="edit-actions-row">
+            <button class="edit-save-btn" onclick="saveEdit('learned_from_you')">Save</button>
+            <button class="edit-cancel-btn" onclick="cancelEdit('learned_from_you')">Cancel</button>
+            <button class="edit-regen-btn" onclick="regenSection('learned_from_you')">↺ Regenerate</button>
+          </div>
+        </div>
       </div>
 
-      <div class="report-section">
-        <div class="section-eyebrow">Where We See Friction</div>
-        <div class="section-heading">What we want to be honest about</div>
-        <div class="section-body">${frictionHtml}</div>
+      <!-- 5. FRICTION -->
+      <div class="report-section" data-key="friction">
+        <div class="section-header-row">
+          <div><div class="section-eyebrow">Where We See Friction</div>
+          <div class="section-heading">What we want to be honest about</div></div>
+          ${sectionEditBtn('friction')}
+        </div>
+        <div class="section-body" id="body-friction">
+          ${frictionBox(report.friction || '')}
+        </div>
+        <div class="section-edit-area" id="edit-friction" style="display:none">
+          <textarea class="section-textarea" id="textarea-friction">${escHtml(report.friction || '')}</textarea>
+          <div class="edit-actions-row">
+            <button class="edit-save-btn" onclick="saveEdit('friction')">Save</button>
+            <button class="edit-cancel-btn" onclick="cancelEdit('friction')">Cancel</button>
+            <button class="edit-regen-btn" onclick="regenSection('friction')">↺ Regenerate</button>
+          </div>
+        </div>
       </div>
 
-      <div class="report-section">
-        <div class="section-eyebrow">What We Would Love to Discuss</div>
-        <div class="section-heading">Talking points for today</div>
-        <ul class="talking-points">${talkingPoints}</ul>
+      <!-- 6. TALKING POINTS -->
+      <div class="report-section" data-key="discussion_points">
+        <div class="section-header-row">
+          <div><div class="section-eyebrow">What We Would Love to Discuss</div>
+          <div class="section-heading">Talking points for today</div></div>
+          ${sectionEditBtn('discussion_points')}
+        </div>
+        <div class="tp-grid" id="body-discussion_points">
+          ${(report.discussion_points || []).map((pt, i) => tpCard(pt, i)).join('')}
+        </div>
+        <div class="section-edit-area" id="edit-discussion_points" style="display:none">
+          <textarea class="section-textarea" id="textarea-discussion_points">${escHtml((report.discussion_points || []).join(' | '))}</textarea>
+          <div class="edit-actions-row">
+            <button class="edit-save-btn" onclick="saveEdit('discussion_points')">Save</button>
+            <button class="edit-cancel-btn" onclick="cancelEdit('discussion_points')">Cancel</button>
+            <button class="edit-regen-btn" onclick="regenSection('discussion_points')">↺ Regenerate</button>
+          </div>
+        </div>
       </div>
 
-      <div class="report-section">
-        <div class="section-eyebrow">Looking Ahead, Together</div>
-        <div class="section-heading">Where we go from here</div>
-        <div class="section-body"><p>${escHtml(report.looking_ahead || '')}</p></div>
+      <!-- 7. LOOKING AHEAD -->
+      <div class="report-section" data-key="looking_ahead">
+        <div class="section-header-row">
+          <div><div class="section-eyebrow">Looking Ahead, Together</div>
+          <div class="section-heading">Where we go from here</div></div>
+          ${sectionEditBtn('looking_ahead')}
+        </div>
+        <div class="section-body" id="body-looking_ahead"><p>${escHtml(report.looking_ahead || '')}</p></div>
+        <div class="section-edit-area" id="edit-looking_ahead" style="display:none">
+          <textarea class="section-textarea" id="textarea-looking_ahead">${escHtml(report.looking_ahead || '')}</textarea>
+          <div class="edit-actions-row">
+            <button class="edit-save-btn" onclick="saveEdit('looking_ahead')">Save</button>
+            <button class="edit-cancel-btn" onclick="cancelEdit('looking_ahead')">Cancel</button>
+            <button class="edit-regen-btn" onclick="regenSection('looking_ahead')">↺ Regenerate</button>
+          </div>
+        </div>
       </div>
 
     </div>
 
     <div class="report-footer">
       <span>Prepared with care by your Trellis Customer Success team</span>
-      <span class="footer-trellis">Trellis &mdash; Learning that sticks. Relationships that last.</span>
+      <span class="footer-trellis">Trellis — Learning that sticks. Relationships that last.</span>
     </div>
   `;
 }
+
+// ── SECTION EDIT / SAVE / REGENERATE ─────────────────────────────
+function toggleEdit(key) {
+  const bodyEl = document.getElementById('body-' + key);
+  const editEl = document.getElementById('edit-' + key);
+  const isEditing = editEl.style.display !== 'none';
+  if (isEditing) {
+    cancelEdit(key);
+  } else {
+    bodyEl.style.display = 'none';
+    editEl.style.display = 'block';
+    const ta = document.getElementById('textarea-' + key);
+    if (ta) { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; }
+  }
+}
+
+function saveEdit(key) {
+  const ta = document.getElementById('textarea-' + key);
+  if (!ta) return;
+  const newValue = ta.value.trim();
+  const bodyEl = document.getElementById('body-' + key);
+  const editEl = document.getElementById('edit-' + key);
+
+  if (key === 'discussion_points') {
+    const pts = newValue.split(/\n\n+/).filter(p => p.trim());
+    generatedReport.discussion_points = pts;
+    bodyEl.innerHTML = pts.map((pt, i) => tpCard(pt, i)).join('');
+  } else if (key === 'friction') {
+    generatedReport.friction = newValue;
+    bodyEl.innerHTML = frictionBox(newValue);
+  } else {
+    generatedReport[key] = newValue;
+    bodyEl.innerHTML = '<p>' + escHtml(newValue) + '</p>';
+  }
+  bodyEl.style.display = '';
+  editEl.style.display = 'none';
+}
+
+function cancelEdit(key) {
+  document.getElementById('body-' + key).style.display = '';
+  document.getElementById('edit-' + key).style.display = 'none';
+}
+
+async function regenSection(key) {
+  const btn = document.querySelector('#edit-' + key + ' .edit-regen-btn');
+  if (btn) { btn.textContent = '↺ Regenerating...'; btn.disabled = true; }
+
+  const sectionLabels = {
+    journey_so_far: 'The Journey So Far — how we got here together',
+    where_you_are_today: 'Where You Are Today — usage and engagement this quarter',
+    moments_that_mattered: 'Moments That Mattered — highlights of the relationship',
+    learned_from_you: 'What We Have Learned From You — how this customer shaped Trellis',
+    friction: 'Where We See Friction — honest assessment of risks and open issues',
+    discussion_points: 'What We Would Love to Discuss — 4 talking points for the meeting',
+    looking_ahead: 'Looking Ahead Together — forward-looking narrative',
+  };
+
+  const systemPrompt = `You are a senior writer at Trellis rewriting one section of a customer engagement report.
+Section to rewrite: ${sectionLabels[key] || key}
+Write 120-180 words of warm, specific, professional prose. No bullet points. Reference actual data from the account.
+${key === 'discussion_points' ? 'Return exactly 4 talking points, one per paragraph, each 1-2 sentences.' : ''}
+${key === 'friction' ? 'Write 2-4 honest, specific sentences about risks or open issues. Each sentence should stand alone as a distinct point.' : ''}
+Return ONLY the section text, no labels, no JSON.`;
+
+  try {
+    const newText = await callClaude(systemPrompt, 'Account data:\n' + JSON.stringify(currentAccount, null, 2), 600);
+    const ta = document.getElementById('textarea-' + key);
+    if (ta) ta.value = newText.trim();
+  } catch (e) {
+    alert('Regeneration failed: ' + e.message);
+  }
+
+  if (btn) { btn.textContent = '↺ Regenerate'; btn.disabled = false; }
+}
+
 
 // ── PDF DOWNLOAD ──────────────────────────────────────────────────
 function downloadReportPDF() {
