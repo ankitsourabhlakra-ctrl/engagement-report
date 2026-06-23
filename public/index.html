@@ -2497,7 +2497,7 @@ function renderReport(report, plan) {
           ${(report.discussion_points || []).map((pt, i) => tpCard(pt, i)).join('')}
         </div>
         <div class="section-edit-area" id="edit-discussion_points" style="display:none">
-          <textarea class="section-textarea" id="textarea-discussion_points">${escHtml((report.discussion_points || []).join(' | '))}</textarea>
+          <textarea class="section-textarea" id="textarea-discussion_points" placeholder="One talking point per line. Each line becomes a separate card.">${escHtml((report.discussion_points || []).join('\n'))}</textarea>
           <div class="edit-actions-row">
             <button class="edit-save-btn" onclick="saveEdit('discussion_points')">Save</button>
             <button class="edit-cancel-btn" onclick="cancelEdit('discussion_points')">Cancel</button>
@@ -2556,7 +2556,7 @@ function saveEdit(key) {
   const editEl = document.getElementById('edit-' + key);
 
   if (key === 'discussion_points') {
-    const pts = newValue.split(/\n\n+/).filter(p => p.trim());
+    const pts = newValue.split(/\n+/).map(p => p.trim()).filter(Boolean);
     generatedReport.discussion_points = pts;
     bodyEl.innerHTML = pts.map((pt, i) => tpCard(pt, i)).join('');
   } else if (key === 'our_commitment') {
