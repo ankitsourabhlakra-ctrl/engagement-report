@@ -2645,14 +2645,105 @@ function downloadReportPDF() {
   doc.setTextColor(0); y = 92;
 
   const sections = [
-    { eye: 'The Journey So Far', head: 'How we got here, together', body: report.journey_so_far },
-    { eye: 'Where You Are Today', head: 'A look at this quarter', body: report.where_you_are_today },
+    { eye: 'Our Journey Together', head: 'How we got here, together', body: report.journey_so_far },
+    { eye: 'Your Progress This Quarter', head: 'What your team has achieved', body: report.where_you_are_today },
     { eye: 'Moments That Mattered', head: 'Highlights of our relationship', body: report.moments_that_mattered },
-    { eye: 'What We Have Learned From You', head: 'How you have shaped Trellis', body: report.learned_from_you },
+    { eye: 'How You Have Made Us Better', head: 'A credit that belongs to you', body: report.learned_from_you },
     { eye: 'Our Commitment to You', head: 'What we are actively working on', body: report.our_commitment },
     { eye: 'Looking Ahead Together', head: 'What we are building together next', body: report.looking_ahead },
   ];
 
+  // ── VISUAL METRICS PANEL ──────────────────────────────────
+  // Draws a 3-column stats panel + NPS score + feature adoption
+  // to match the visual snapshot shown in the web view
+  const u = a.usage;
+  const npsColor = a.nps.score >= 60 ? [26,122,74] : a.nps.score >= 40 ? [183,96,10] : [176,58,46];
+  const actColor  = u.activation_rate_pct >= 70  ? [26,122,74] : u.activation_rate_pct >= 50  ? [183,96,10] : [176,58,46];
+  const compColor = u.course_completion_rate_pct >= 70 ? [26,122,74] : u.course_completion_rate_pct >= 50 ? [183,96,10] : [176,58,46];
+
+  checkY(72);
+  // Panel background
+  doc.setFillColor(244,246,248);
+  doc.roundedRect(margin, y, contentWidth, 64, 2, 2, 'F');
+
+  // NPS block (left)
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(28);
+  doc.setTextColor(...npsColor);
+  doc.text(String(a.nps.score), margin + 16, y + 22, { align: 'center' });
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(138,155,176);
+  doc.text('NPS SCORE', margin + 16, y + 29, { align: 'center' });
+  if (a.nps.previous_score) {
+    const delta = a.nps.score - a.nps.previous_score;
+    doc.setTextColor(delta >= 0 ? 26 : 176, delta >= 0 ? 122 : 58, delta >= 0 ? 74 : 46);
+    doc.text((delta >= 0 ? '+' : '') + delta + ' vs prev', margin + 16, y + 36, { align: 'center' });
+  }
+  doc.text(a.nps.respondents + ' respondents', margin + 16, y + 43, { align: 'center' });
+
+  // Divider
+  doc.setDrawColor(213,222,231); doc.setLineWidth(0.3);
+  doc.line(margin + 34, y + 8, margin + 34, y + 56);
+
+  // Activation rate block
+  const colW = (contentWidth - 38) / 3;
+  const col1x = margin + 38;
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.setTextColor(...actColor);
+  doc.text(u.activation_rate_pct + '%', col1x + colW/2, y + 22, { align: 'center' });
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(138,155,176);
+  doc.text('ACTIVATION RATE', col1x + colW/2, y + 29, { align: 'center' });
+  const actDelta = u.activation_rate_pct - u.prev_quarter_activation_pct;
+  doc.setTextColor(actDelta >= 0 ? 26 : 176, actDelta >= 0 ? 122 : 58, actDelta >= 0 ? 74 : 46);
+  doc.text((actDelta >= 0 ? '▲' : '▼') + Math.abs(actDelta) + '% vs last quarter', col1x + colW/2, y + 36, { align: 'center' });
+  // Progress bar
+  doc.setFillColor(220,228,236); doc.roundedRect(col1x + 4, y + 42, colW - 8, 4, 1, 1, 'F');
+  doc.setFillColor(...actColor); doc.roundedRect(col1x + 4, y + 42, (colW - 8) * u.activation_rate_pct / 100, 4, 1, 1, 'F');
+
+  // Completion rate block
+  const col2x = col1x + colW;
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.setTextColor(...compColor);
+  doc.text(u.course_completion_rate_pct + '%', col2x + colW/2, y + 22, { align: 'center' });
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(138,155,176);
+  doc.text('COMPLETION RATE', col2x + colW/2, y + 29, { align: 'center' });
+  const compDelta = u.course_completion_rate_pct - u.prev_quarter_completion_pct;
+  doc.setTextColor(compDelta >= 0 ? 26 : 176, compDelta >= 0 ? 122 : 58, compDelta >= 0 ? 74 : 46);
+  doc.text((compDelta >= 0 ? '▲' : '▼') + Math.abs(compDelta) + '% vs last quarter', col2x + colW/2, y + 36, { align: 'center' });
+  doc.setFillColor(220,228,236); doc.roundedRect(col2x + 4, y + 42, colW - 8, 4, 1, 1, 'F');
+  doc.setFillColor(...compColor); doc.roundedRect(col2x + 4, y + 42, (colW - 8) * u.course_completion_rate_pct / 100, 4, 1, 1, 'F');
+
+  // Active seats block
+  const col3x = col2x + colW;
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(27,79,114);
+  doc.text(u.active_users.toLocaleString('en-IN'), col3x + colW/2, y + 19, { align: 'center' });
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(138,155,176);
+  doc.text('of ' + u.licensed_seats.toLocaleString('en-IN'), col3x + colW/2, y + 26, { align: 'center' });
+  doc.text('ACTIVE SEATS', col3x + colW/2, y + 33, { align: 'center' });
+
+  y += 70;
+
+  // Feature adoption row
+  checkY(24);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(138,155,176);
+  doc.text('FEATURE ADOPTION', margin, y); y += 6;
+  let fx = margin;
+  u.features_adopted.forEach(f => {
+    const tw = doc.getTextWidth(f) + 8;
+    if (fx + tw > W - margin) { fx = margin; y += 8; }
+    doc.setFillColor(234,240,251); doc.roundedRect(fx, y - 4, tw, 6, 1, 1, 'F');
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(27,79,114);
+    doc.text(f, fx + 4, y); fx += tw + 4;
+  });
+  u.features_not_adopted.forEach(f => {
+    const tw = doc.getTextWidth(f) + 8;
+    if (fx + tw > W - margin) { fx = margin; y += 8; }
+    doc.setFillColor(244,246,248); doc.roundedRect(fx, y - 4, tw, 6, 1, 1, 'F');
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(138,155,176);
+    doc.text(f, fx + 4, y); fx += tw + 4;
+  });
+  y += 14;
+
+  doc.setDrawColor(220); doc.setLineWidth(0.2);
+  doc.line(margin, y, W - margin, y); y += 8;
+
+  // ── SECTIONS LOOP ──────────────────────────────────────────
   sections.forEach(s => {
     checkY(40);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(46, 134, 193);
