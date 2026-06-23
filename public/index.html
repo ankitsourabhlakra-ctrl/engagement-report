@@ -2556,7 +2556,7 @@ function saveEdit(key) {
   const editEl = document.getElementById('edit-' + key);
 
   if (key === 'discussion_points') {
-    const pts = newValue.split(/\n+/).map(p => p.trim()).filter(Boolean);
+    const pts = newValue.split(/\n+/).map(p => p.replace(/^\d+[.)\s]+/, '').trim()).filter(Boolean);
     generatedReport.discussion_points = pts;
     bodyEl.innerHTML = pts.map((pt, i) => tpCard(pt, i)).join('');
   } else if (key === 'our_commitment') {
@@ -2592,14 +2592,23 @@ async function regenSection(key) {
   const systemPrompt = `You are rewriting one section of a customer-facing Engagement Report for ${currentAccount.name}. This document is addressed TO the customer — use "you" and "your team" throughout. It will be presented in a meeting and left with them.
 Section to rewrite: ${sectionLabels[key] || key}
 Write in a warm, direct, specific voice. 60-80 words max. No bullet points. Reference actual module names, dates, or verbatims from the account data.
-${key === 'discussion_points' ? 'Return exactly 4 conversation topics, each 1 sentence, framed as joint conversation starters' : ''}
+${key === 'discussion_points' ? 'Return EXACTLY 4 lines. Each line is one talking point, 1-2 sentences. No numbers, no bullets, no blank lines, nothing else. Just 4 plain lines separated by newlines.' : ''}
 ${key === 'our_commitment' ? 'Write 2-3 solution-forward sentences. Trellis owns the issues. No blame. Each sentence names something specific being worked on.' : ''}
 Return ONLY the section text, no labels, no JSON.`;
 
   try {
     const newText = await callClaude(systemPrompt, 'Account data:\n' + JSON.stringify(currentAccount, null, 2), 600);
     const ta = document.getElementById('textarea-' + key);
-    if (ta) ta.value = newText.trim();
+    if (ta) {
+      // For discussion_points, parse the regenerated text into clean lines
+      // so the textarea shows one point per line regardless of how Claude formatted them
+      if (key === 'discussion_points') {
+        const pts = newText.trim().split(/\n+/).map(p => p.replace(/^\d+[.)\s]+/, '').trim()).filter(Boolean);
+        ta.value = pts.join('\n');
+      } else {
+        ta.value = newText.trim();
+      }
+    }
   } catch (e) {
     alert('Regeneration failed: ' + e.message);
   }
