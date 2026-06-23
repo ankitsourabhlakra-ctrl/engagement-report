@@ -2710,12 +2710,12 @@ function downloadReportPDF() {
   doc.setTextColor(0); y = 92;
 
   const sections = [
-    { eye: 'Our Journey Together', head: 'How we got here, together', body: report.journey_so_far },
-    { eye: 'Your Progress This Quarter', head: 'What your team has achieved', body: report.where_you_are_today },
-    { eye: 'Moments That Mattered', head: 'Highlights of our relationship', body: report.moments_that_mattered },
-    { eye: 'How You Have Made Us Better', head: 'A credit that belongs to you', body: report.learned_from_you },
-    { eye: 'Our Commitment to You', head: 'What we are actively working on', body: report.our_commitment },
-    { eye: 'Looking Ahead Together', head: 'What we are building together next', body: report.looking_ahead },
+    { key: 'journey_so_far',      eye: 'Our Journey Together',       head: 'How we got here, together',         body: report.journey_so_far },
+    { key: 'where_you_are_today', eye: 'Your Progress This Quarter', head: 'What your team has achieved',       body: report.where_you_are_today },
+    { key: 'moments_that_mattered', eye: 'Moments That Mattered',    head: 'Highlights of our relationship',    body: report.moments_that_mattered },
+    { key: 'learned_from_you',    eye: 'How You Have Made Us Better', head: 'A credit that belongs to you',    body: report.learned_from_you },
+    { key: 'our_commitment',      eye: 'Our Commitment to You',       head: 'What we are actively working on', body: report.our_commitment },
+    { key: 'looking_ahead',       eye: 'Looking Ahead Together',      head: 'What we are building together next', body: report.looking_ahead },
   ];
 
   // ── VISUAL METRICS PANEL ──────────────────────────────────
@@ -2824,40 +2824,156 @@ function downloadReportPDF() {
   doc.setDrawColor(220); doc.setLineWidth(0.2);
   doc.line(margin, y, W - margin, y); y += 8;
 
-  // ── SECTIONS LOOP ──────────────────────────────────────────
-  sections.forEach(s => {
-    checkY(40);
+  // ── SECTION HELPERS ──────────────────────────────────────────
+  function drawSectionHeader(eye, head) {
+    checkY(22);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(46, 134, 193);
-    doc.text(s.eye.toUpperCase(), margin, y); y += 6;
+    doc.text(eye.toUpperCase(), margin, y); y += 6;
     doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(26, 43, 60);
-    const headLines = doc.splitTextToSize(s.head, cw);
+    const headLines = doc.splitTextToSize(head, cw);
     doc.text(headLines, margin, y); y += headLines.length * 6 + 4;
+  }
+
+  function drawBodyText(body) {
     doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(74, 85, 104);
-    const bodyLines = doc.splitTextToSize(s.body || '', cw);
-    bodyLines.forEach(line => {
-      checkY(7);
-      doc.text(line, margin, y); y += 6;
-    });
-    y += 6;
-    doc.setDrawColor(220); doc.setLineWidth(0.2);
+    const lines = doc.splitTextToSize(body || '', cw);
+    lines.forEach(line => { checkY(7); doc.text(line, margin, y); y += 6; });
+  }
+
+  function drawSectionDivider() {
+    y += 4; doc.setDrawColor(220); doc.setLineWidth(0.2);
     doc.line(margin, y, W - margin, y); y += 8;
+  }
+
+  function drawPullQuote(verbatim) {
+    if (!verbatim || !verbatim.text) return;
+    const text = '"' + verbatim.text + '"';
+    const attr = '— ' + verbatim.attribution;
+    const qLines = doc.splitTextToSize(text, cw - 16);
+    const aLines = doc.splitTextToSize(attr, cw - 16);
+    const boxH = qLines.length * 6 + aLines.length * 5 + 16;
+    checkY(boxH + 4);
+    doc.setFillColor(254, 245, 231);
+    doc.rect(margin, y, cw, boxH, 'F');
+    doc.setFillColor(212, 148, 58);
+    doc.rect(margin, y, 3, boxH, 'F');
+    y += 8;
+    doc.setFont('helvetica', 'italic'); doc.setFontSize(10); doc.setTextColor(30, 43, 60);
+    qLines.forEach(l => { doc.text(l, margin + 10, y); y += 6; });
+    y += 2;
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.setTextColor(138, 155, 176);
+    aLines.forEach(l => { doc.text(l, margin + 10, y); y += 5; });
+    y += 4;
+  }
+
+  function drawMilestoneTimeline(milestones) {
+    const recent = milestones.slice(-4);
+    const typeColors = {
+      'Renewal':          [26, 122, 74],
+      'Onboarding':       [26, 82, 118],
+      'Co-creation':      [126, 34, 206],
+      'Recognition':      [183, 96, 10],
+      'Product Influence':[183, 96, 10],
+      'Risk Event':       [176, 58, 46],
+      'Recovery':         [26, 122, 74],
+      'Milestone':        [27, 79, 114],
+    };
+    y += 4;
+    recent.forEach((m, i) => {
+      const descLines = doc.splitTextToSize(m.description, cw - 22);
+      const itemH = descLines.length * 5 + 18;
+      checkY(itemH);
+      const col = typeColors[m.type] || [27, 79, 114];
+      doc.setFillColor(...col);
+      doc.circle(margin + 5, y + 4, 3, 'F');
+      if (i < recent.length - 1) {
+        doc.setDrawColor(...col);
+        doc.setLineWidth(0.4);
+        doc.line(margin + 5, y + 7, margin + 5, y + itemH);
+      }
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(138, 155, 176);
+      doc.text(m.date, margin + 14, y + 4);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(col[0], col[1], col[2]);
+      doc.text(m.type, margin + 14, y + 10);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(74, 85, 104);
+      descLines.forEach((l, li) => { doc.text(l, margin + 14, y + 16 + li * 5); });
+      y += itemH;
+    });
+    y += 4;
+  }
+
+  function drawAlertBoxes(body) {
+    const sentences = body.split(/(?<=[.!?])\s+/).filter(s => s.trim().length > 10);
+    sentences.forEach(s => {
+      const lines = doc.splitTextToSize(s.trim(), cw - 24);
+      const boxH = lines.length * 5.5 + 12;
+      checkY(boxH + 4);
+      doc.setFillColor(253, 237, 236);
+      doc.roundedRect(margin, y, cw, boxH, 1, 1, 'F');
+      doc.setDrawColor(241, 148, 138); doc.setLineWidth(0.3);
+      doc.roundedRect(margin, y, cw, boxH, 1, 1, 'S');
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(176, 58, 46);
+      doc.text('!', margin + 7, y + boxH / 2 + 1, { baseline: 'middle' });
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(74, 85, 104);
+      lines.forEach((l, li) => { doc.text(l, margin + 16, y + 7 + li * 5.5); });
+      y += boxH + 4;
+    });
+  }
+
+  function drawTalkingPointCards(points) {
+    const cardW = (cw - 8) / 2;
+    for (let i = 0; i < points.length; i += 2) {
+      const leftPt  = points[i] || '';
+      const rightPt = points[i + 1] || '';
+      const leftLines  = doc.splitTextToSize(leftPt,  cardW - 22);
+      const rightLines = doc.splitTextToSize(rightPt, cardW - 22);
+      const cardH = Math.max(leftLines.length, rightLines.length) * 5.5 + 20;
+      checkY(cardH + 4);
+      const drawCard = (pt, lines, xOff, idx) => {
+        doc.setFillColor(235, 242, 251);
+        doc.roundedRect(xOff, y, cardW, cardH, 2, 2, 'F');
+        doc.setFillColor(27, 79, 114);
+        doc.circle(xOff + 10, y + 10, 6, 'F');
+        doc.setFont('helvetica', 'bold'); doc.setFontSize(9); doc.setTextColor(255, 255, 255);
+        doc.text(String(idx + 1), xOff + 10, y + 10, { align: 'center', baseline: 'middle' });
+        doc.setFont('helvetica', 'normal'); doc.setFontSize(9.5); doc.setTextColor(74, 85, 104);
+        lines.forEach((l, li) => { doc.text(l, xOff + 20, y + 7 + li * 5.5); });
+      };
+      if (leftPt)  drawCard(leftPt,  leftLines,  margin,              i);
+      if (rightPt) drawCard(rightPt, rightLines, margin + cardW + 8,  i + 1);
+      y += cardH + 6;
+    }
+  }
+
+  // ── SECTIONS LOOP ──────────────────────────────────────────
+  sections.forEach((s, si) => {
+    drawSectionHeader(s.eye, s.head);
+
+    if (s.key === 'our_commitment') {
+      drawAlertBoxes(s.body || '');
+    } else {
+      drawBodyText(s.body);
+      // Pull quote after "Your Progress" section
+      if (s.key === 'where_you_are_today' && report.featured_verbatim) {
+        y += 4;
+        drawPullQuote(report.featured_verbatim);
+      }
+      // Milestone timeline after "Moments That Mattered"
+      if (s.key === 'moments_that_mattered') {
+        drawMilestoneTimeline(a.partnership_milestones);
+      }
+    }
+
+    drawSectionDivider();
   });
 
-  // Talking points
+  // Talking points — card grid matching web view
   checkY(30);
   doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(46, 134, 193);
   doc.text("LET'S TALK ABOUT", margin, y); y += 6;
   doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(26, 43, 60);
-  doc.text('Our shared agenda for today', margin, y); y += 8;
-  (report.discussion_points || []).forEach((pt, i) => {
-    checkY(14);
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(27, 79, 114);
-    doc.text((i + 1) + '.', margin, y);
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(74, 85, 104);
-    const ptLines = doc.splitTextToSize(pt, cw - 8);
-    ptLines.forEach(line => { checkY(7); doc.text(line, margin + 8, y); y += 6; });
-    y += 3;
-  });
+  doc.text('Our shared agenda for today', margin, y); y += 10;
+  drawTalkingPointCards(report.discussion_points || []);
 
   // Footer on every page
   const pageCount = doc.internal.getNumberOfPages();
