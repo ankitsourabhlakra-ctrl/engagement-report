@@ -359,6 +359,15 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); font
   .tp-grid { grid-template-columns: 1fr; }
   .ticket-summary-row { grid-template-columns: repeat(2,1fr); }
 }
+
+/* ── SERVICE SUMMARY (customer-facing ticket replacement) ── */
+.service-summary { display: flex; gap: 12px; margin-bottom: 10px; }
+.svc-stat { flex: 1; text-align: center; background: var(--bg); border-radius: 6px; padding: 10px 6px; }
+.svc-val { font-size: 20px; font-weight: 700; color: var(--text); }
+.svc-green { color: var(--green); }
+.svc-label { font-size: 9px; font-family: var(--mono); color: var(--text-3); text-transform: uppercase; margin-top: 2px; }
+.svc-feature-pill { background: var(--gold-lt); color: var(--gold); border: 1px solid var(--gold); border-radius: 12px; padding: 4px 10px; font-size: 11px; font-weight: 600; display: inline-block; margin-bottom: 8px; }
+.svc-positive { font-size: 11px; color: var(--text-2); line-height: 1.5; font-style: italic; border-left: 3px solid var(--green); padding-left: 8px; }
 </style>
 </head>
 <body>
@@ -2122,32 +2131,33 @@ async function startGeneration() {
 // ── PASS 1: NARRATIVE PLANNER ────────────────────────────────────
 async function runNarrativePlanner() {
   const a = currentAccount;
-  const systemPrompt = `You are a senior Customer Success strategist at Trellis, a B2B LMS company. You are preparing a narrative engagement report for a customer visit.
+  const systemPrompt = `You are crafting a customer-facing Engagement Report on behalf of Trellis, a B2B LMS company. This document will be presented to ${a.name} during a relationship visit and left with them as a tangible record of the partnership. It is addressed TO the customer — not written about them for internal use.
 
-Analyse all five data sources provided and return a NARRATIVE PLAN — the strategic synthesis that will drive the written report. This is NOT the report itself; it is the thinking behind it.
+The customer should read this and feel: seen, valued, and proud of what they have built with Trellis. The CSM will use it to guide the conversation, but every word is written for the customer's eyes.
 
-MILESTONE CONTEXT:
-Quarter: ${a.current_milestone.quarter} (${QUARTER_LABELS[a.current_milestone.quarter]})
-Visit Type: ${a.current_milestone.label}
-JFM = Retention visit, renewal focus
-AMJ = Annual planning, collection
-JAS = Courtesy visit, relationship warmth
-OND = Growth conversation, expansion signals
+VISIT CONTEXT:
+Quarter: ${a.current_milestone.quarter} — ${a.current_milestone.label}
+JFM = Renewal moment — celebrate the relationship, reinforce the value of continuing
+AMJ = Planning moment — look forward together, acknowledge the year ahead
+JAS = Relationship moment — warmth, appreciation, light check-in
+OND = Growth moment — celebrate what's been built, open the door to what's next
 
-Return ONLY valid JSON, no markdown, in exactly this structure:
+Your job now is to build the NARRATIVE PLAN — the strategic lens through which the report will be written. Think: what is the most important thing this customer needs to hear about themselves and about this relationship?
+
+Return ONLY valid JSON, no markdown:
 {
-  "headline": "One sentence that captures the soul of this relationship right now — honest, specific, not generic",
-  "quarter_focus": "What this particular visit is really about given the milestone type and account state",
-  "tone": "one of: celebratory / warm / direct / honest / recovery / urgent",
-  "key_themes": ["theme1", "theme2", "theme3"],
+  "headline": "One sentence the customer should feel when they read this — specific, honest, celebratory where earned",
+  "quarter_focus": "What this visit moment is really about, from the customer's perspective",
+  "tone": "celebratory / warm / appreciative / honest-and-supportive / recovery / forward-looking",
+  "key_themes": ["theme about their achievement", "theme about the relationship", "theme about what's ahead"],
   "section_plans": {
-    "journey_so_far": "The angle to take — what part of the history matters most right now",
-    "where_you_are_today": "The key data story — what the numbers actually mean",
-    "moments_that_mattered": "Which 2-3 specific moments from milestones/verbatims to highlight and why",
-    "learned_from_you": "How this customer has shaped Trellis — be specific, not generic",
-    "friction": "What to name honestly — risks, frustrations, open issues",
-    "discussion_points": ["talking point 1", "talking point 2", "talking point 3", "talking point 4"],
-    "looking_ahead": "Forward look tone and specific signals to reference"
+    "journey_so_far": "What story of their journey to tell — frame from their growth, not our sales timeline",
+    "where_you_are_today": "Which achievements and progress metrics to highlight — frame as their team's accomplishment",
+    "moments_that_mattered": "2-3 specific moments from milestones/verbatims that show this is a real relationship, not transactional",
+    "learned_from_you": "How this customer has made Trellis better — be specific, not generic. This is a gift of credit back to them.",
+    "our_commitment": "What Trellis owns and is actively working on — honest, solution-forward, never blame-the-customer",
+    "discussion_points": ["conversation topic 1 framed as shared agenda", "topic 2", "topic 3", "topic 4"],
+    "looking_ahead": "Forward look framed as shared excitement about what is possible together"
   }
 }`;
 
@@ -2165,17 +2175,29 @@ Return ONLY valid JSON, no markdown, in exactly this structure:
 // ── PASS 2: SECTION WRITER ────────────────────────────────────────
 async function runSectionWriter(plan) {
   const a = currentAccount;
-  const systemPrompt = `You are a senior writer at Trellis crafting a customer engagement report for ${a.name}. This is a narrative document — it tells the story of a business relationship, not a dashboard summary.
+  const systemPrompt = `You are writing a customer-facing Engagement Report for ${a.name} from Trellis. This document will be presented to the customer in a meeting and left with them. Every sentence is addressed TO the customer — use "you" and "your team", never "the client" or "the account".
 
-WRITING RULES:
-- Write in a warm, professional, direct voice — like a trusted advisor, not a vendor
-- Numbers and data exist to back up a story, not to replace one
-- Each section should feel like it was written by someone who genuinely knows this account
-- No bullet points, no headers within sections — flowing prose only
-- Length per section: 100-200 words. Discussion points section: 4 numbered talking points, 1-2 sentences each
-- Be specific — reference actual module names, ticket numbers, verbatim quotes, milestone dates where relevant
+VOICE AND TONE:
+- Warm, direct, confident — like a trusted partner, not a vendor presenting a review
+- Celebratory where earned. Honest where needed. Never self-congratulatory about Trellis.
+- The customer should feel: recognised, valued, and proud when they read this
 
-NARRATIVE PLAN:
+LENGTH RULES — this will be read in a meeting, not studied at a desk:
+- journey_so_far: 60-80 words max
+- where_you_are_today: 60-80 words max — the visuals carry the data, the prose adds meaning
+- moments_that_mattered: 60-80 words max — pick the most specific, human detail
+- learned_from_you: 50-70 words max — the most personal section. Make it feel like a genuine credit back to them.
+- our_commitment: 50-70 words max — 2-3 things Trellis owns and is working on. No blame, no excuses. "We are working on X. You should expect Y by Z."
+- discussion_points: 4 topics, 1 sentence each — shared agenda items, framed as "Let's explore...", "We'd love your perspective on..."
+- looking_ahead: 50-70 words max — forward-looking, warm, specific to signals in the data
+
+WHAT NOT TO DO:
+- Do not use words like "account", "client", "vendor", "dashboard", "metrics", "KPI"
+- Do not mention raw ticket counts, SLA breaches, or open issues in the text — the honest conversation is in our_commitment, and it is solution-forward
+- Do not write generic phrases like "we value your partnership" — be specific to this relationship
+- Do not start any section with "We at Trellis..." — start with the customer or the shared story
+
+NARRATIVE PLAN TO FOLLOW:
 ${JSON.stringify(plan, null, 2)}
 
 Return ONLY valid JSON, no markdown, with exactly these keys:
@@ -2184,10 +2206,10 @@ Return ONLY valid JSON, no markdown, with exactly these keys:
   "where_you_are_today": "prose",
   "moments_that_mattered": "prose",
   "learned_from_you": "prose",
-  "friction": "prose",
-  "discussion_points": ["point 1 prose", "point 2 prose", "point 3 prose", "point 4 prose"],
+  "our_commitment": "prose",
+  "discussion_points": ["Let's explore...", "We'd love your perspective on...", "topic 3", "topic 4"],
   "looking_ahead": "prose",
-  "featured_verbatim": {"text": "verbatim quote", "attribution": "name, role"},
+  "featured_verbatim": {"text": "pull the most powerful verbatim quote from the NPS data — exact words", "attribution": "exact name and role from the data"},
   "report_date": "${new Date().toLocaleDateString('en-IN', {day:'numeric',month:'long',year:'numeric'})}"
 }`;
 
@@ -2265,30 +2287,6 @@ function featurePills(adopted, notAdopted) {
   return `<div class="feature-pills-wrap">${ad}${na}</div>`;
 }
 
-function ticketMini(tickets) {
-  const cats = tickets.categories;
-  const total = Object.values(cats).reduce((a,b) => a + b, 0);
-  const colors = { Bug: '#B03A2E', 'How-To': '#1A5276', 'Feature Request': '#1A7A4A', Billing: '#B7600A' };
-  const bars = Object.entries(cats).map(([k,v]) => {
-    const w = total > 0 ? Math.round((v / total) * 100) : 0;
-    return `<div class="ticket-row">
-      <div class="ticket-label">${escHtml(k)}</div>
-      <div class="ticket-bar-track"><div class="ticket-bar-fill" style="width:${w}%;background:${colors[k] || '#888'}"></div></div>
-      <div class="ticket-count">${v}</div>
-    </div>`;
-  }).join('');
-  const open = tickets.open;
-  const sla = tickets.sla_breach_count;
-  return `<div class="ticket-panel">
-    <div class="ticket-summary-row">
-      <div class="ticket-summary-stat"><div class="tss-val">${tickets.total_this_quarter}</div><div class="tss-label">Total</div></div>
-      <div class="ticket-summary-stat"><div class="tss-val" style="color:var(--green)">${tickets.resolved}</div><div class="tss-label">Resolved</div></div>
-      <div class="ticket-summary-stat"><div class="tss-val" style="color:${open > 3 ? 'var(--red)' : 'var(--amber)' }">${open}</div><div class="tss-label">Open</div></div>
-      <div class="ticket-summary-stat"><div class="tss-val" style="color:${sla > 0 ? 'var(--red)' : 'var(--green)'}">${sla}</div><div class="tss-label">SLA Breaches</div></div>
-    </div>
-    <div class="ticket-bars">${bars}</div>
-  </div>`;
-}
 
 function frictionBox(text) {
   const sentences = text.split(/(?<=[.!?])\s+/).filter(s => s.trim().length > 10);
@@ -2373,7 +2371,15 @@ function renderReport(report, plan) {
       </div>
       <div class="snapshot-tickets">
         <div class="snapshot-usage-heading">Support This Quarter</div>
-        ${ticketMini(a.tickets)}
+        <div class="service-summary">
+          <div class="svc-stat"><div class="svc-val">${a.tickets.total_this_quarter}</div><div class="svc-label">Queries handled</div></div>
+          <div class="svc-stat"><div class="svc-val svc-green">${a.tickets.resolved}</div><div class="svc-label">Resolved</div></div>
+          <div class="svc-stat"><div class="svc-val">${a.tickets.avg_resolution_hours}h</div><div class="svc-label">Avg resolution</div></div>
+        </div>
+        <div class="svc-feature-note">
+          ${a.tickets.categories['Feature Request'] > 0 ? '<div class="svc-feature-pill">💡 ' + a.tickets.categories['Feature Request'] + ' feature suggestion' + (a.tickets.categories['Feature Request'] > 1 ? 's' : '') + ' from your team this quarter</div>' : ''}
+        </div>
+        ${a.tickets.notable_positive ? '<div class="svc-positive">' + escHtml(a.tickets.notable_positive) + '</div>' : ''}
       </div>
     </div>
 
@@ -2383,7 +2389,7 @@ function renderReport(report, plan) {
       <div class="report-section" data-key="journey_so_far">
         <div class="section-header-row">
           <div><div class="section-eyebrow">The Journey So Far</div>
-          <div class="section-heading">How we got here, together</div></div>
+          <div class="section-heading">Our journey together</div></div>
           ${sectionEditBtn('journey_so_far')}
         </div>
         <div class="section-body" id="body-journey_so_far"><p>${escHtml(report.journey_so_far || '')}</p></div>
@@ -2400,8 +2406,8 @@ function renderReport(report, plan) {
       <!-- 2. WHERE YOU ARE TODAY -->
       <div class="report-section" data-key="where_you_are_today">
         <div class="section-header-row">
-          <div><div class="section-eyebrow">Where You Are Today</div>
-          <div class="section-heading">A look at this quarter</div></div>
+          <div><div class="section-eyebrow">Your Progress This Quarter</div>
+          <div class="section-heading">What your team has achieved</div></div>
           ${sectionEditBtn('where_you_are_today')}
         </div>
         <div class="section-body" id="body-where_you_are_today"><p>${escHtml(report.where_you_are_today || '')}</p></div>
@@ -2445,8 +2451,8 @@ function renderReport(report, plan) {
       <!-- 4. LEARNED FROM YOU -->
       <div class="report-section" data-key="learned_from_you">
         <div class="section-header-row">
-          <div><div class="section-eyebrow">What We Have Learned From You</div>
-          <div class="section-heading">How you have shaped Trellis</div></div>
+          <div><div class="section-eyebrow">How You Have Made Us Better</div>
+          <div class="section-heading">A credit that belongs to you</div></div>
           ${sectionEditBtn('learned_from_you')}
         </div>
         <div class="section-body" id="body-learned_from_you"><p>${escHtml(report.learned_from_you || '')}</p></div>
@@ -2460,22 +2466,22 @@ function renderReport(report, plan) {
         </div>
       </div>
 
-      <!-- 5. FRICTION -->
+      <!-- 5. OUR COMMITMENT -->
       <div class="report-section" data-key="friction">
         <div class="section-header-row">
-          <div><div class="section-eyebrow">Where We See Friction</div>
-          <div class="section-heading">What we want to be honest about</div></div>
-          ${sectionEditBtn('friction')}
+          <div><div class="section-eyebrow">Our Commitment to You</div>
+          <div class="section-heading">What we are actively working on</div></div>
+          ${sectionEditBtn('our_commitment')}
         </div>
-        <div class="section-body" id="body-friction">
-          ${frictionBox(report.friction || '')}
+        <div class="section-body" id="body-our_commitment">
+          ${frictionBox(report.our_commitment || '')}
         </div>
-        <div class="section-edit-area" id="edit-friction" style="display:none">
-          <textarea class="section-textarea" id="textarea-friction">${escHtml(report.friction || '')}</textarea>
+        <div class="section-edit-area" id="edit-our_commitment" style="display:none">
+          <textarea class="section-textarea" id="textarea-our_commitment">${escHtml(report.our_commitment || '')}</textarea>
           <div class="edit-actions-row">
-            <button class="edit-save-btn" onclick="saveEdit('friction')">Save</button>
-            <button class="edit-cancel-btn" onclick="cancelEdit('friction')">Cancel</button>
-            <button class="edit-regen-btn" onclick="regenSection('friction')">↺ Regenerate</button>
+            <button class="edit-save-btn" onclick="saveEdit('our_commitment')">Save</button>
+            <button class="edit-cancel-btn" onclick="cancelEdit('our_commitment')">Cancel</button>
+            <button class="edit-regen-btn" onclick="regenSection('our_commitment')">↺ Regenerate</button>
           </div>
         </div>
       </div>
@@ -2483,8 +2489,8 @@ function renderReport(report, plan) {
       <!-- 6. TALKING POINTS -->
       <div class="report-section" data-key="discussion_points">
         <div class="section-header-row">
-          <div><div class="section-eyebrow">What We Would Love to Discuss</div>
-          <div class="section-heading">Talking points for today</div></div>
+          <div><div class="section-eyebrow">Let's Talk About</div>
+          <div class="section-heading">Our shared agenda for today</div></div>
           ${sectionEditBtn('discussion_points')}
         </div>
         <div class="tp-grid" id="body-discussion_points">
@@ -2504,7 +2510,7 @@ function renderReport(report, plan) {
       <div class="report-section" data-key="looking_ahead">
         <div class="section-header-row">
           <div><div class="section-eyebrow">Looking Ahead, Together</div>
-          <div class="section-heading">Where we go from here</div></div>
+          <div class="section-heading">What we are building together next</div></div>
           ${sectionEditBtn('looking_ahead')}
         </div>
         <div class="section-body" id="body-looking_ahead"><p>${escHtml(report.looking_ahead || '')}</p></div>
@@ -2553,8 +2559,8 @@ function saveEdit(key) {
     const pts = newValue.split(/\n\n+/).filter(p => p.trim());
     generatedReport.discussion_points = pts;
     bodyEl.innerHTML = pts.map((pt, i) => tpCard(pt, i)).join('');
-  } else if (key === 'friction') {
-    generatedReport.friction = newValue;
+  } else if (key === 'our_commitment') {
+    generatedReport.our_commitment = newValue;
     bodyEl.innerHTML = frictionBox(newValue);
   } else {
     generatedReport[key] = newValue;
@@ -2574,20 +2580,20 @@ async function regenSection(key) {
   if (btn) { btn.textContent = '↺ Regenerating...'; btn.disabled = true; }
 
   const sectionLabels = {
-    journey_so_far: 'The Journey So Far — how we got here together',
-    where_you_are_today: 'Where You Are Today — usage and engagement this quarter',
-    moments_that_mattered: 'Moments That Mattered — highlights of the relationship',
-    learned_from_you: 'What We Have Learned From You — how this customer shaped Trellis',
-    friction: 'Where We See Friction — honest assessment of risks and open issues',
-    discussion_points: 'What We Would Love to Discuss — 4 talking points for the meeting',
-    looking_ahead: 'Looking Ahead Together — forward-looking narrative',
+    journey_so_far: 'Our Journey Together — how this partnership began and where it has come from',
+    where_you_are_today: 'Your Progress This Quarter — written for the customer, celebrating their team achievement',
+    moments_that_mattered: 'Moments That Mattered — specific human highlights that show this is a real relationship',
+    learned_from_you: 'How You Have Made Us Better — credit returned to the customer for their influence on Trellis',
+    our_commitment: 'Our Commitment to You — honest, solution-forward. 2-3 things Trellis owns and is fixing. No blame.',
+    discussion_points: "Let's Talk About — 4 shared agenda topics framed as joint conversation starters",
+    looking_ahead: 'What We Are Building Together Next — forward-looking, warm, specific to signals in the data',
   };
 
-  const systemPrompt = `You are a senior writer at Trellis rewriting one section of a customer engagement report.
+  const systemPrompt = `You are rewriting one section of a customer-facing Engagement Report for ${currentAccount.name}. This document is addressed TO the customer — use "you" and "your team" throughout. It will be presented in a meeting and left with them.
 Section to rewrite: ${sectionLabels[key] || key}
-Write 120-180 words of warm, specific, professional prose. No bullet points. Reference actual data from the account.
-${key === 'discussion_points' ? 'Return exactly 4 talking points, one per paragraph, each 1-2 sentences.' : ''}
-${key === 'friction' ? 'Write 2-4 honest, specific sentences about risks or open issues. Each sentence should stand alone as a distinct point.' : ''}
+Write in a warm, direct, specific voice. 60-80 words max. No bullet points. Reference actual module names, dates, or verbatims from the account data.
+${key === 'discussion_points' ? 'Return exactly 4 conversation topics, each 1 sentence, framed as joint conversation starters' : ''}
+${key === 'our_commitment' ? 'Write 2-3 solution-forward sentences. Trellis owns the issues. No blame. Each sentence names something specific being worked on.' : ''}
 Return ONLY the section text, no labels, no JSON.`;
 
   try {
