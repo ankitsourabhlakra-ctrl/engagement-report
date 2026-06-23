@@ -2640,8 +2640,8 @@ function downloadReportPDF() {
     { eye: 'Where You Are Today', head: 'A look at this quarter', body: report.where_you_are_today },
     { eye: 'Moments That Mattered', head: 'Highlights of our relationship', body: report.moments_that_mattered },
     { eye: 'What We Have Learned From You', head: 'How you have shaped Trellis', body: report.learned_from_you },
-    { eye: 'Where We See Friction', head: 'What we want to be honest about', body: report.friction },
-    { eye: 'Looking Ahead, Together', head: 'Where we go from here', body: report.looking_ahead },
+    { eye: 'Our Commitment to You', head: 'What we are actively working on', body: report.our_commitment },
+    { eye: 'Looking Ahead Together', head: 'What we are building together next', body: report.looking_ahead },
   ];
 
   sections.forEach(s => {
@@ -2665,9 +2665,9 @@ function downloadReportPDF() {
   // Talking points
   checkY(30);
   doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(46, 134, 193);
-  doc.text('WHAT WE WOULD LOVE TO DISCUSS', margin, y); y += 6;
+  doc.text("LET'S TALK ABOUT", margin, y); y += 6;
   doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.setTextColor(26, 43, 60);
-  doc.text('Talking points for today', margin, y); y += 8;
+  doc.text('Our shared agenda for today', margin, y); y += 8;
   (report.discussion_points || []).forEach((pt, i) => {
     checkY(14);
     doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(27, 79, 114);
