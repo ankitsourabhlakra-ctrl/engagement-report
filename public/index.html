@@ -2664,7 +2664,7 @@ function downloadReportPDF() {
   checkY(72);
   // Panel background
   doc.setFillColor(244,246,248);
-  doc.roundedRect(margin, y, contentWidth, 64, 2, 2, 'F');
+  doc.roundedRect(margin, y, cw, 64, 2, 2, 'F');
 
   // NPS block (left)
   doc.setFont('helvetica', 'bold'); doc.setFontSize(28);
@@ -2684,7 +2684,7 @@ function downloadReportPDF() {
   doc.line(margin + 34, y + 8, margin + 34, y + 56);
 
   // Activation rate block
-  const colW = (contentWidth - 38) / 3;
+  const colW = (cw - 38) / 3;
   const col1x = margin + 38;
   doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.setTextColor(actColor[0], actColor[1], actColor[2]);
   doc.text(u.activation_rate_pct + '%', col1x + colW/2, y + 22, { align: 'center' });
