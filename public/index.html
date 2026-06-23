@@ -368,6 +368,22 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); font
 .svc-label { font-size: 9px; font-family: var(--mono); color: var(--text-3); text-transform: uppercase; margin-top: 2px; }
 .svc-feature-pill { background: var(--gold-lt); color: var(--gold); border: 1px solid var(--gold); border-radius: 12px; padding: 4px 10px; font-size: 11px; font-weight: 600; display: inline-block; margin-bottom: 8px; }
 .svc-positive { font-size: 11px; color: var(--text-2); line-height: 1.5; font-style: italic; border-left: 3px solid var(--green); padding-left: 8px; }
+
+/* ── ABOUT DEMO CARD ── */
+.about-demo-card { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 24px; margin-top: 28px; }
+.about-demo-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.about-demo-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.about-demo-badge { font-size: 10px; font-weight: 600; font-family: var(--mono); background: var(--gold-lt); color: var(--gold); border: 1px solid var(--gold); border-radius: 10px; padding: 3px 10px; }
+.about-demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.about-demo-block { padding: 16px; background: var(--bg); border-radius: 8px; }
+.about-block-heading { font-size: 12px; font-weight: 700; color: var(--trellis); margin-bottom: 8px; }
+.about-demo-block p { font-size: 12px; color: var(--text-2); line-height: 1.65; margin: 0; }
+.about-steps { padding-left: 18px; margin: 0; }
+.about-steps li { font-size: 12px; color: var(--text-2); line-height: 1.65; margin-bottom: 5px; }
+.about-steps li strong { color: var(--trellis); }
+@media (max-width: 768px) {
+  .about-demo-grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
@@ -397,6 +413,55 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); font
       <div class="screen1-sub" id="screen1-sub">Loading accounts...</div>
     </div>
     <div class="account-grid" id="account-grid"></div>
+
+    <!-- ABOUT THIS DEMO -->
+    <div class="about-demo-card">
+      <div class="about-demo-header">
+        <div class="about-demo-title">&#9432; About This Tool</div>
+        <div class="about-demo-badge">Demo Environment</div>
+      </div>
+
+      <div class="about-demo-grid">
+
+        <div class="about-demo-block">
+          <div class="about-block-heading">What you are looking at</div>
+          <p>This is a demonstration of Trellis&#8217;s AI-powered Customer Engagement Report generator &mdash; a tool that lets a Customer Success Manager generate a personalised, narrative engagement report for a customer visit in a few minutes. It pulls from five data sources (usage, support tickets, NPS verbatims, field notes, and partnership milestones) and produces a continuous-scroll report addressed directly to the customer, along with a downloadable PDF to leave behind after the meeting.</p>
+        </div>
+
+        <div class="about-demo-block">
+          <div class="about-block-heading">Why you see 8 accounts across different health states</div>
+          <p>Each account has been designed to demonstrate a genuinely different type of customer relationship &mdash; from a champion account ready to expand (Greenfield Pharma), to a long-term stable partner (University of Pune), to a churning account where the relationship is at risk (Rishihood University). The range exists so that the tool&#8217;s ability to shift tone, emphasis, and talking points based on account health is visible in a single session, without needing to wait for real data to accumulate over months.</p>
+        </div>
+
+        <div class="about-demo-block">
+          <div class="about-block-heading">Why all four quarters appear in one view</div>
+          <p>The milestone dashboard shows the full annual customer journey at a glance. Each quarter has a specific business purpose: JFM is a retention and renewal conversation, AMJ is annual planning and collection, JAS is a courtesy visit to maintain the relationship, and OND is a growth conversation about expansion. Showing all four together lets the CSM see where the current visit sits in the year&#8217;s arc, and how earlier quarters have progressed. Earlier quarters simulate completion so the interface demonstrates its full range.</p>
+        </div>
+
+        <div class="about-demo-block">
+          <div class="about-block-heading">Why reports read differently for different accounts</div>
+          <p>The AI generation is calibrated to both the account health and the quarter type. A Greenfield Pharma OND report is celebratory and expansion-focused. A Rishihood University JFM report is honest and recovery-oriented. A Delhi Technical University JAS report acknowledges a crisis and rebuilds trust. The same tool, the same seven sections, but a fundamentally different narrative in each case &mdash; because the customer and the moment are different.</p>
+        </div>
+
+        <div class="about-demo-block">
+          <div class="about-block-heading">Data and confidentiality</div>
+          <p>All company names, NPS scores, field notes, verbatim quotes, usage metrics, and ticket data in this demonstration are entirely fictional. They have been designed to reflect realistic patterns in B2B SaaS customer success relationships but do not represent any real organisation or person. This tool is a proof of concept and portfolio demonstration, not a production system.</p>
+        </div>
+
+        <div class="about-demo-block">
+          <div class="about-block-heading">How to use this tool</div>
+          <ol class="about-steps">
+            <li>Select an account from the cards above</li>
+            <li>Review the account health, milestone dashboard, and key metrics</li>
+            <li>Click <strong>+ Create Draft Report</strong> on the current quarter&#8217;s Report card</li>
+            <li>Wait 30&ndash;45 seconds while the AI reads the account data and writes the report</li>
+            <li>Read through each section &mdash; click the pencil icon to edit or regenerate any section</li>
+            <li>Download the PDF to use as a leave-behind after the customer visit</li>
+          </ol>
+        </div>
+
+      </div>
+    </div>
   </div>
 
   <!-- ═══════════════════ SCREEN 2: ACCOUNT DETAIL ═══════════════════ -->
@@ -2049,7 +2114,7 @@ function renderUsageSnapshot() {
 function usageStat(label, val, delta, suffix) {
   const deltaHtml = (typeof delta === 'number' && delta !== 0)
     ? '<div class="usage-stat-delta ' + (delta > 0 ? 'delta-up' : 'delta-down') + '">' +
-      (delta > 0 ? '▲' : '▼') + Math.abs(delta) + (suffix || '%') + ' vs last quarter</div>'
+      (delta > 0 ? '+' : '-') + Math.abs(delta) + (suffix || '%') + ' vs last quarter</div>'
     : '';
   return '<div class="usage-stat"><div class="usage-stat-val">' + escHtml(String(val)) + '</div>' +
     '<div class="usage-stat-label">' + escHtml(label) + '</div>' + deltaHtml + '</div>';
@@ -2258,7 +2323,7 @@ function npsGaugeSVG(score, prevScore) {
   const color = npsColor(score);
   const delta = prevScore !== null ? (score - prevScore) : null;
   const deltaHtml = delta !== null
-    ? `<text x="50" y="72" text-anchor="middle" font-size="9" fill="${delta >= 0 ? '#1A7A4A' : '#B03A2E'}" font-family="monospace">${delta >= 0 ? '▲' : '▼'}${Math.abs(delta)} vs prev</text>`
+    ? `<text x="50" y="72" text-anchor="middle" font-size="9" fill="${delta >= 0 ? '#1A7A4A' : '#B03A2E'}" font-family="monospace">${delta >= 0 ? '+' : '-'}${Math.abs(delta)} vs prev</text>`
     : `<text x="50" y="72" text-anchor="middle" font-size="9" fill="#8A9BB0" font-family="monospace">First score</text>`;
   return `<svg viewBox="0 0 100 80" class="nps-gauge-svg">
     <path d="M${cx-r},${cy} A${r},${r} 0 0,1 ${cx+r},${cy}" fill="none" stroke="#DDE3EB" stroke-width="9" stroke-linecap="round"/>
@@ -2273,7 +2338,7 @@ function npsGaugeSVG(score, prevScore) {
 function progressBar(pct, color, prevPct) {
   const delta = prevPct !== undefined ? pct - prevPct : null;
   const deltaStr = delta !== null
-    ? `<span class="bar-delta ${delta >= 0 ? 'delta-up' : 'delta-down'}">${delta >= 0 ? '▲' : '▼'}${Math.abs(delta)}% vs last quarter</span>`
+    ? `<span class="bar-delta ${delta >= 0 ? 'delta-up' : 'delta-down'}">${delta >= 0 ? '+' : '-'}${Math.abs(delta)}% vs last quarter</span>`
     : '';
   return `<div class="prog-bar-wrap">
     <div class="prog-bar-track"><div class="prog-bar-fill" style="width:${pct}%;background:${color}"></div></div>
@@ -2692,7 +2757,7 @@ function downloadReportPDF() {
   doc.text('ACTIVATION RATE', col1x + colW/2, y + 29, { align: 'center' });
   const actDelta = u.activation_rate_pct - u.prev_quarter_activation_pct;
   doc.setTextColor(actDelta >= 0 ? 26 : 176, actDelta >= 0 ? 122 : 58, actDelta >= 0 ? 74 : 46);
-  doc.text((actDelta >= 0 ? '▲' : '▼') + Math.abs(actDelta) + '% vs last quarter', col1x + colW/2, y + 36, { align: 'center' });
+  doc.text((actDelta >= 0 ? '+' : '-') + Math.abs(actDelta) + '% vs last quarter', col1x + colW/2, y + 36, { align: 'center' });
   // Progress bar
   doc.setFillColor(220,228,236); doc.roundedRect(col1x + 4, y + 42, colW - 8, 4, 1, 1, 'F');
   doc.setFillColor(actColor[0], actColor[1], actColor[2]); doc.roundedRect(col1x + 4, y + 42, (colW - 8) * u.activation_rate_pct / 100, 4, 1, 1, 'F');
@@ -2705,7 +2770,7 @@ function downloadReportPDF() {
   doc.text('COMPLETION RATE', col2x + colW/2, y + 29, { align: 'center' });
   const compDelta = u.course_completion_rate_pct - u.prev_quarter_completion_pct;
   doc.setTextColor(compDelta >= 0 ? 26 : 176, compDelta >= 0 ? 122 : 58, compDelta >= 0 ? 74 : 46);
-  doc.text((compDelta >= 0 ? '▲' : '▼') + Math.abs(compDelta) + '% vs last quarter', col2x + colW/2, y + 36, { align: 'center' });
+  doc.text((compDelta >= 0 ? '+' : '-') + Math.abs(compDelta) + '% vs last quarter', col2x + colW/2, y + 36, { align: 'center' });
   doc.setFillColor(220,228,236); doc.roundedRect(col2x + 4, y + 42, colW - 8, 4, 1, 1, 'F');
   doc.setFillColor(compColor[0], compColor[1], compColor[2]); doc.roundedRect(col2x + 4, y + 42, (colW - 8) * u.course_completion_rate_pct / 100, 4, 1, 1, 'F');
 
@@ -2719,26 +2784,42 @@ function downloadReportPDF() {
 
   y += 70;
 
-  // Feature adoption row
-  checkY(24);
+  // Feature adoption — two clear rows (adopted vs not yet)
+  checkY(28);
   doc.setFont('helvetica', 'bold'); doc.setFontSize(8); doc.setTextColor(138,155,176);
-  doc.text('FEATURE ADOPTION', margin, y); y += 6;
-  let fx = margin;
-  u.features_adopted.forEach(f => {
-    const tw = doc.getTextWidth(f) + 8;
-    if (fx + tw > W - margin) { fx = margin; y += 8; }
-    doc.setFillColor(234,240,251); doc.roundedRect(fx, y - 4, tw, 6, 1, 1, 'F');
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(27,79,114);
-    doc.text(f, fx + 4, y); fx += tw + 4;
-  });
-  u.features_not_adopted.forEach(f => {
-    const tw = doc.getTextWidth(f) + 8;
-    if (fx + tw > W - margin) { fx = margin; y += 8; }
-    doc.setFillColor(244,246,248); doc.roundedRect(fx, y - 4, tw, 6, 1, 1, 'F');
-    doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(138,155,176);
-    doc.text(f, fx + 4, y); fx += tw + 4;
-  });
-  y += 14;
+  doc.text('FEATURE ADOPTION', margin, y); y += 7;
+
+  // Adopted — teal background pills
+  if (u.features_adopted.length) {
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(27,79,114);
+    doc.text('Adopted:', margin, y);
+    let fx = margin + doc.getTextWidth('Adopted:') + 4;
+    u.features_adopted.forEach(f => {
+      const tw = doc.getTextWidth(f) + 6;
+      if (fx + tw > W - margin) { fx = margin + doc.getTextWidth('Adopted:') + 4; y += 7; checkY(8); }
+      doc.setFillColor(234,240,251); doc.roundedRect(fx, y - 4, tw, 6, 1, 1, 'F');
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(27,79,114);
+      doc.text(f, fx + 3, y); fx += tw + 3;
+    });
+    y += 8;
+  }
+
+  // Not yet adopted — grey background pills
+  if (u.features_not_adopted.length) {
+    checkY(8);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(7); doc.setTextColor(138,155,176);
+    doc.text('Not yet:', margin, y);
+    let fx2 = margin + doc.getTextWidth('Not yet:') + 4;
+    u.features_not_adopted.forEach(f => {
+      const tw = doc.getTextWidth(f) + 6;
+      if (fx2 + tw > W - margin) { fx2 = margin + doc.getTextWidth('Not yet:') + 4; y += 7; checkY(8); }
+      doc.setFillColor(244,246,248); doc.roundedRect(fx2, y - 4, tw, 6, 1, 1, 'F');
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(138,155,176);
+      doc.text(f, fx2 + 3, y); fx2 += tw + 3;
+    });
+    y += 8;
+  }
+  y += 6;
 
   doc.setDrawColor(220); doc.setLineWidth(0.2);
   doc.line(margin, y, W - margin, y); y += 8;
